@@ -57,24 +57,24 @@ typedef union {
 typedef struct {
   // Ref
   uint8_t   ref;
-  bool      has_cell;
-  bool      has_gps;
+  uint8_t   has_cell;
+  uint8_t   has_gps;
 
   // Type
   uint8_t   type;
-  bool      has_modsts;
-  bool      has_temp;
+  uint8_t   has_modsts;
+  uint8_t   has_temp;
   uint8_t   id_len;
 
   // IO
-  bool      input_1;
-  bool      input_2;
-  bool      output_1;
-  bool      output_2;
-  bool      lat_south;
-  bool      lon_west;
-  bool      has_cog;
-  bool      has_lac;
+  uint8_t   input_1;
+  uint8_t   input_2;
+  uint8_t   output_1;
+  uint8_t   output_2;
+  uint8_t   lat_south;
+  uint8_t   lon_west;
+  uint8_t   has_cog;
+  uint8_t   has_lac;
 
   // Time
   uint32_t  time;
@@ -83,11 +83,11 @@ typedef struct {
   uint32_t  device_id;
 
   // Latitude
-  uint32_t  latitude;
-  bool      gps_valid;
+  uint32_t  lat;
+  uint8_t   gps_invalid;
 
   // Longitude
-  uint32_t  longitude;
+  uint32_t  lon;
 
   // Speed
   uint8_t   speed;

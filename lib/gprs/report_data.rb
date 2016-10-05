@@ -59,12 +59,12 @@ module Gprs
   class ReportData < BinData::Record
     endian :little
 
-    uint8 :id
-    choice :data, :selection => :id do
+    uint8 :data_type
+    choice :data, :selection => :data_type do
       driver_key     REPORT_DATA_ID_DRIVER_KEY
       additional_io  REPORT_DATA_ID_ADDITIONAL_IO
 
-      skip  :default, :length => 0, :value => "Unknown Data ID"
+      skip  :default, :length => 0, :value => "Unknown"
     end
   end
 end

@@ -32,14 +32,16 @@ def parse_report_single(log = true, bindata = true)
     puts "# Parsing 1 packet (#{parse_method})..."
   end
 
+  report = nil
   if bindata
     report = Gprs.parse_report(packet_single)
-    if log
-      puts report
-      puts ""
-    end
   else
-    GprsC.parse_report(packet_single, log)
+    report = GprsC.parse_report(packet_single, log)
+  end
+
+  if log
+    puts report
+    puts ""
   end
 end
 
@@ -53,21 +55,19 @@ def parse_report_multiple(log = true, bindata = true)
 
   if log
     puts ""
-    puts "# Parsing #{$packet_multiple.length} packets (#{parse_method})..."
+    puts "# Parsing #{packet_multiple.length} packets (#{parse_method})..."
   end
 
   packet_multiple.each do |packet|
+    report = nil
     if bindata
       report = Gprs.parse_report(packet)
-      if log
-        puts report
-        puts ""
-      end
     else
-      GprsC.parse_report(packet, log)
-      if log
-        puts ""
-      end
+      report = GprsC.parse_report(packet, log)
+    end
+    if log
+      puts report
+      puts ""
     end
   end
 end

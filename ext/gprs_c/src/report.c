@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include <assert.h>
 
 #include "gprs.h"
@@ -28,9 +29,9 @@ void report_print(report_t report)
   printf("Device ID: %d\n",                                           report.device_id);
 
   if (report.has_gps) {
-    printf("GPS Valid: %d\n",                                         report.gps_valid);
-    printf("Latitude: %d\n",                                          report.latitude);
-    printf("Longitude: %d\n",                                         report.longitude);
+    printf("Lat: %d\n",                                               report.lat);
+    printf("GPS Invalid: %d\n",                                       report.gps_invalid);
+    printf("Lon: %d\n",                                               report.lon);
     printf("Speed: %d\n",                                             report.speed);
   }
   if (report.has_cog) {
@@ -102,6 +103,8 @@ int report_parse(uint8_t * buf, int size, report_t * reports)
   int idx = 0;
   uint8_t byte;
 
+  memset(report, 0, sizeof(report_t));
+
   // Ref
   byte = gprs_read_byte(buf, &idx);
   report->ref       = (byte & 0x3F) >> 0;
@@ -134,15 +137,15 @@ int report_parse(uint8_t * buf, int size, report_t * reports)
 
   if (report->has_gps) {
     // Latitude & Longitude
-    report->latitude  = gprs_read_bytes(buf, &idx, 3);
-    report->longitude = gprs_read_bytes(buf, &idx, 3);
+    report->lat         = gprs_read_bytes(buf, &idx, 3);
+    report->lon         = gprs_read_bytes(buf, &idx, 3);
 
     // Read GPS valid bit and clear from latitude field (important!!!!)
-    report->gps_valid = (report->latitude & 0x800000) >> 23;
-    report->latitude  = (report->latitude & 0x7FFFFF) >> 0;
+    report->gps_invalid = (report->lat & 0x800000) >> 23;
+    report->lat         = (report->lat & 0x7FFFFF) >> 0;
 
     // Speed
-    report->speed = gprs_read_byte(buf, &idx);
+    report->speed       = gprs_read_byte(buf, &idx);
   }
 
   // COG
@@ -186,6 +189,7 @@ int report_parse(uint8_t * buf, int size, report_t * reports)
     {
       additional_io_t * addio = &report->data.additional_io;
 
+      // Mask
       byte = gprs_read_byte(buf, &idx);
       addio->has_int_voltage = (byte & 0x01) >> 0;
       addio->has_ext_voltage = (byte & 0x02) >> 1;
@@ -194,7 +198,6 @@ int report_parse(uint8_t * buf, int size, report_t * reports)
       addio->has_input_3     = (byte & 0x10) >> 4;
       addio->has_output_3    = (byte & 0x20) >> 5;
       addio->has_orientation = (byte & 0x40) >> 6;
-
 
       // Internal Voltage
       if (addio->has_int_voltage) {
