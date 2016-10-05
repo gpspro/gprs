@@ -3,6 +3,9 @@ require "gprs/defs"
 require "gprs/report"
 require "gprs/version"
 
+# C bindings
+require "gprs_c"
+
 module Gprs
   def self.parse_report(packet)
     # Preprocess GPRS packet first
@@ -16,4 +19,8 @@ module Gprs
       puts "Invalid report packet!"
     end
   end
+end
+
+module GprsC
+  # Nothing for now
 end
