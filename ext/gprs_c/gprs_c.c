@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <time.h>
 
 #include <ruby.h>
 
@@ -24,6 +25,103 @@ VALUE make_symbol(const char * name)
 }
 
 VALUE hash_from_report(report_t report)
+{
+  VALUE hash = rb_hash_new();
+  struct tm time = report_stotm(report.time);
+  char time_str[80];
+  double latitude = report_stolat(report.lat, report.lat_south);
+  double longitude = report_stolon(report.lon, report.lon_west);
+
+  strftime(time_str, sizeof(time_str), "%m/%d/%Y %H:%M:%S", &time);
+
+  rb_hash_aset(hash, make_symbol("device_id"),    INT2NUM(report.device_id));
+  rb_hash_aset(hash, make_symbol("time_secs"),    INT2NUM(report.time));
+  rb_hash_aset(hash, make_symbol("time"),         rb_str_new2(time_str));
+  rb_hash_aset(hash, make_symbol("input_1"),      INT2NUM(report.input_1));
+  rb_hash_aset(hash, make_symbol("input_2"),      INT2NUM(report.input_2));
+  rb_hash_aset(hash, make_symbol("output_1"),     INT2NUM(report.output_1));
+  rb_hash_aset(hash, make_symbol("output_2"),     INT2NUM(report.output_2));
+  if (report.has_gps) {
+    rb_hash_aset(hash, make_symbol("gps_valid"),  INT2NUM(!report.gps_invalid));
+    rb_hash_aset(hash, make_symbol("latitude"),   DBL2NUM(latitude));
+    rb_hash_aset(hash, make_symbol("longitude"),  DBL2NUM(longitude));
+    rb_hash_aset(hash, make_symbol("speed"),      INT2NUM(report.speed));
+  }
+  if (report.has_cog) {
+    rb_hash_aset(hash, make_symbol("cog"),        INT2NUM(report.cog));
+  }
+  rb_hash_aset(hash, make_symbol("report_type"),  INT2NUM(report.type));
+  if (report_has_code(report.type)) {
+    rb_hash_aset(hash, make_symbol("code"),       INT2NUM(report.code));
+  }
+  if (report.has_modsts) {
+    rb_hash_aset(hash, make_symbol("modsts"),     INT2NUM(report.modsts));
+  }
+  if (report.has_temp) {
+    rb_hash_aset(hash, make_symbol("temperature"),INT2NUM(report.temp));
+  }
+  if (report.has_cell) {
+    rb_hash_aset(hash, make_symbol("cell_id"),    INT2NUM(report.cell_id));
+    rb_hash_aset(hash, make_symbol("signal"),     INT2NUM(report.signal));
+  }
+  if (report.has_lac) {
+    rb_hash_aset(hash, make_symbol("lac"),        INT2NUM(report.lac));
+  }
+
+  switch (report.type) {
+  case REPORT_TYPE_EXTENDED_DATA:
+  {
+    VALUE ext    = rb_hash_new();
+
+    rb_hash_aset(ext, make_symbol("data_type"),   INT2NUM(report.data_type));
+
+    switch (report.data_type) {
+    case REPORT_DATA_TYPE_ADDITIONAL_IO:
+    {
+      additional_io_t * addio = &report.data.additional_io;
+      if (addio->has_int_voltage) {
+        double int_voltage = report_cvtov(addio->int_voltage);
+        rb_hash_aset(ext, make_symbol("int_voltage"),     DBL2NUM(int_voltage));
+      }
+      if (addio->has_ext_voltage) {
+        double ext_voltage = report_cvtov(addio->ext_voltage);
+        rb_hash_aset(ext, make_symbol("ext_voltage"),     DBL2NUM(ext_voltage));
+      }
+      if (addio->has_adc_input_1) {
+        rb_hash_aset(ext, make_symbol("analog_input_1"),  INT2NUM(addio->adc_input_1));
+      }
+      if (addio->has_adc_input_2) {
+        rb_hash_aset(ext, make_symbol("analog_input_2"),  INT2NUM(addio->adc_input_2));
+      }
+      if (addio->has_input_3) {
+        rb_hash_aset(ext, make_symbol("input_3"),         INT2NUM(addio->input_3));
+      }
+      if (addio->has_output_3) {
+        rb_hash_aset(ext, make_symbol("output_3"),        INT2NUM(addio->output_3));
+      }
+      if (addio->has_orientation) {
+        rb_hash_aset(ext, make_symbol("orientation"),     INT2NUM(addio->orientation));
+      }
+      break;
+    }
+    default:
+      // Do nothing
+      break;
+    }
+
+    rb_hash_aset(hash, make_symbol("ext"),        ext);
+
+    break;
+  }
+  default:
+    // Do nothing;
+    break;
+  }
+
+  return hash;
+}
+
+VALUE hash_from_report_raw(report_t report)
 {
   VALUE hash = rb_hash_new();
 
@@ -104,7 +202,7 @@ VALUE hash_from_report(report_t report)
 
 VALUE parse_report(VALUE self, VALUE data, VALUE print)
 {
-  int size = RARRAY_LEN(data);
+  int size = (int)RARRAY_LEN(data);
   uint8_t packet[size];
   report_t reports[10];
   int i, rc;

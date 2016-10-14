@@ -71,8 +71,8 @@ typedef struct {
   uint8_t   input_2;
   uint8_t   output_1;
   uint8_t   output_2;
-  uint8_t   lat_south;
-  uint8_t   lon_west;
+  bool      lat_south;
+  bool      lon_west;
   uint8_t   has_cog;
   uint8_t   has_lac;
 
@@ -115,6 +115,14 @@ typedef struct {
   uint8_t   data_type;
   data_t    data;
 } report_t;
+
+// Conversion functions
+extern void   report_lattos(double lat, uint32_t * secs, bool * south);
+extern void   report_lontos(double lon, uint32_t * secs, bool * west);
+extern double report_stolat(uint32_t secs, bool south);
+extern double report_stolon(uint32_t secs, bool west);
+extern struct tm report_stotm(uint32_t secs);
+extern double report_cvtov(uint16_t cV);
 
 extern void report_print(report_t report);
 extern int  report_parse(uint8_t * buf, int size, report_t * reports);

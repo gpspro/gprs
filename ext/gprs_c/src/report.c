@@ -3,10 +3,13 @@
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
 
 #include "gprs.h"
 #include "report.h"
 
+#define REPORT_LAT_SECS_MULT    115200.0
+#define REPORT_LON_SECS_MULT    90000.0
 
 void report_print(report_t report)
 {
@@ -92,6 +95,72 @@ void report_print(report_t report)
     }
     break;
   }
+}
+
+void report_lattos(double lat, uint32_t * secs, bool * south)
+{
+  if (lat < 0.0) {
+    lat = -lat;
+    *south = true;
+  } else {
+    *south = false;
+  }
+
+  *secs = lat * REPORT_LAT_SECS_MULT;
+}
+
+void report_lontos(double lon, uint32_t * secs, bool * west)
+{
+  if (lon < 0.0) {
+    lon = -lon;
+    *west = true;
+  } else {
+    *west = false;
+  }
+
+  *secs = lon * REPORT_LON_SECS_MULT;
+}
+
+double report_stolat(uint32_t secs, bool south)
+{
+  double lat = (double)(secs / REPORT_LAT_SECS_MULT);
+  if (south) lat = -lat;
+  return lat;
+}
+
+double report_stolon(uint32_t secs, bool west)
+{
+  double lon = (double)(secs / REPORT_LON_SECS_MULT);
+  if (west) lon = -lon;
+  return lon;
+}
+
+double report_cvtov(uint16_t cV)
+{
+  return (double)cV / 100.0;
+}
+
+// 01/01/2000 00:00:00
+struct tm time_diff = {
+  .tm_sec = 0,
+  .tm_min = 0,
+  .tm_hour = 0,
+  .tm_mday = 1,
+  .tm_mon = 0,
+  .tm_year = 100
+};
+
+struct tm report_stotm(uint32_t secs)
+{
+  struct tm time;
+
+  // Convert diff to time_t and add secs
+  time_t ts = mktime(&time_diff) + secs;
+
+  // Convert to tm struct
+  time = *localtime(&ts);
+
+  return time;
 }
 
 // Parse report from a buffer (requires that SOP, EOP, and CRC be removed)
