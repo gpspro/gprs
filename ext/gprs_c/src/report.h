@@ -51,7 +51,7 @@ typedef struct  {
 
 typedef union {
   additional_io_t  additional_io;
-} data_t;
+} ext_t;
 
 // Basic report structure (grouped by byte fields)
 typedef struct {
@@ -111,9 +111,9 @@ typedef struct {
   // Lac
   uint16_t  lac;
 
-  // Report Data
-  uint8_t   data_type;
-  data_t    data;
+  // Report Extended Data
+  uint8_t   ext_type;
+  ext_t     ext;
 } report_t;
 
 // Conversion functions

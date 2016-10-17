@@ -73,12 +73,12 @@ VALUE hash_from_report(report_t report)
   {
     VALUE ext    = rb_hash_new();
 
-    rb_hash_aset(ext, make_symbol("data_type"),   INT2NUM(report.data_type));
+    rb_hash_aset(ext, make_symbol("ext_type"),   INT2NUM(report.ext_type));
 
-    switch (report.data_type) {
+    switch (report.ext_type) {
     case REPORT_DATA_TYPE_ADDITIONAL_IO:
     {
-      additional_io_t * addio = &report.data.additional_io;
+      additional_io_t * addio = &report.ext.additional_io;
       if (addio->has_int_voltage) {
         double int_voltage = report_cvtov(addio->int_voltage);
         rb_hash_aset(ext, make_symbol("int_voltage"),     DBL2NUM(int_voltage));
@@ -157,37 +157,35 @@ VALUE hash_from_report_raw(report_t report)
   switch (report.type) {
   case REPORT_TYPE_EXTENDED_DATA:
   {
-    VALUE ext_data = rb_hash_new();
-    VALUE fields = rb_hash_new();
+    VALUE ext = rb_hash_new();
 
-    switch (report.data_type) {
+    rb_hash_aset(ext, make_symbol("ext_type"),              INT2NUM(report.ext_type));
+
+    switch (report.ext_type) {
     case REPORT_DATA_TYPE_ADDITIONAL_IO:
     {
-      additional_io_t * addio = &report.data.additional_io;
-      rb_hash_aset(fields, make_symbol("has_int_voltage"),  INT2NUM(addio->has_int_voltage));
-      rb_hash_aset(fields, make_symbol("has_ext_voltage"),  INT2NUM(addio->has_ext_voltage));
-      rb_hash_aset(fields, make_symbol("has_adc_input_1"),  INT2NUM(addio->has_adc_input_1));
-      rb_hash_aset(fields, make_symbol("has_adc_input_2"),  INT2NUM(addio->has_adc_input_2));
-      rb_hash_aset(fields, make_symbol("has_input_3"),      INT2NUM(addio->has_input_3));
-      rb_hash_aset(fields, make_symbol("has_output_3"),     INT2NUM(addio->has_output_3));
-      rb_hash_aset(fields, make_symbol("has_orientation"),  INT2NUM(addio->has_orientation));
-      rb_hash_aset(fields, make_symbol("int_voltage"),      INT2NUM(addio->int_voltage));
-      rb_hash_aset(fields, make_symbol("ext_voltage"),      INT2NUM(addio->ext_voltage));
-      rb_hash_aset(fields, make_symbol("adc_input_1"),      INT2NUM(addio->adc_input_1));
-      rb_hash_aset(fields, make_symbol("adc_input_2"),      INT2NUM(addio->adc_input_2));
-      rb_hash_aset(fields, make_symbol("input_3"),          INT2NUM(addio->input_3));
-      rb_hash_aset(fields, make_symbol("output_3"),         INT2NUM(addio->output_3));
-      rb_hash_aset(fields, make_symbol("orientation"),      INT2NUM(addio->orientation));
+      additional_io_t * addio = &report.ext.additional_io;
+      rb_hash_aset(ext, make_symbol("has_int_voltage"),  INT2NUM(addio->has_int_voltage));
+      rb_hash_aset(ext, make_symbol("has_ext_voltage"),  INT2NUM(addio->has_ext_voltage));
+      rb_hash_aset(ext, make_symbol("has_adc_input_1"),  INT2NUM(addio->has_adc_input_1));
+      rb_hash_aset(ext, make_symbol("has_adc_input_2"),  INT2NUM(addio->has_adc_input_2));
+      rb_hash_aset(ext, make_symbol("has_input_3"),      INT2NUM(addio->has_input_3));
+      rb_hash_aset(ext, make_symbol("has_output_3"),     INT2NUM(addio->has_output_3));
+      rb_hash_aset(ext, make_symbol("has_orientation"),  INT2NUM(addio->has_orientation));
+      rb_hash_aset(ext, make_symbol("int_voltage"),      INT2NUM(addio->int_voltage));
+      rb_hash_aset(ext, make_symbol("ext_voltage"),      INT2NUM(addio->ext_voltage));
+      rb_hash_aset(ext, make_symbol("adc_input_1"),      INT2NUM(addio->adc_input_1));
+      rb_hash_aset(ext, make_symbol("adc_input_2"),      INT2NUM(addio->adc_input_2));
+      rb_hash_aset(ext, make_symbol("input_3"),          INT2NUM(addio->input_3));
+      rb_hash_aset(ext, make_symbol("output_3"),         INT2NUM(addio->output_3));
+      rb_hash_aset(ext, make_symbol("orientation"),      INT2NUM(addio->orientation));
       break;
     }
     default:
       break;
     }
 
-    rb_hash_aset(ext_data, make_symbol("data_type"),        INT2NUM(report.data_type));
-    rb_hash_aset(ext_data, make_symbol("data"),             fields);
-
-    rb_hash_aset(hash, make_symbol("ext_data"),             ext_data);
+    rb_hash_aset(hash, make_symbol("ext"),                  ext);
 
     break;
   }

@@ -58,12 +58,12 @@ void report_print(report_t report)
   }
   switch (report.type) {
   case REPORT_TYPE_EXTENDED_DATA:
-    printf("Data Type: %d", report.data_type);
+    printf("Data Type: %d", report.ext_type);
 
-    switch (report.data_type) {
+    switch (report.ext_type) {
     case REPORT_DATA_TYPE_ADDITIONAL_IO:
     {
-      additional_io_t * addio = &report.data.additional_io;
+      additional_io_t * addio = &report.ext.additional_io;
 
       printf(" (Additional IO)\n");
       if (addio->has_int_voltage) {
@@ -251,12 +251,12 @@ int report_parse(uint8_t * buf, int size, report_t * reports)
   switch (report->type) {
   case REPORT_TYPE_EXTENDED_DATA:
   {
-    report->data_type = gprs_read_byte(buf, &idx);
+    report->ext_type = gprs_read_byte(buf, &idx);
 
-    switch (report->data_type) {
+    switch (report->ext_type) {
     case REPORT_DATA_TYPE_ADDITIONAL_IO:
     {
-      additional_io_t * addio = &report->data.additional_io;
+      additional_io_t * addio = &report->ext.additional_io;
 
       // Mask
       byte = gprs_read_byte(buf, &idx);
