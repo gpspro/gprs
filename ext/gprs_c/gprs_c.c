@@ -37,10 +37,6 @@ VALUE hash_from_report(report_t report)
   rb_hash_aset(hash, make_symbol("device_id"),    INT2NUM(report.device_id));
   rb_hash_aset(hash, make_symbol("time_secs"),    INT2NUM(report.time));
   rb_hash_aset(hash, make_symbol("time"),         rb_str_new2(time_str));
-  rb_hash_aset(hash, make_symbol("input_1"),      INT2NUM(report.input_1));
-  rb_hash_aset(hash, make_symbol("input_2"),      INT2NUM(report.input_2));
-  rb_hash_aset(hash, make_symbol("output_1"),     INT2NUM(report.output_1));
-  rb_hash_aset(hash, make_symbol("output_2"),     INT2NUM(report.output_2));
   if (report.has_gps) {
     rb_hash_aset(hash, make_symbol("gps_valid"),  INT2NUM(!report.gps_invalid));
     rb_hash_aset(hash, make_symbol("latitude"),   DBL2NUM(latitude));
@@ -67,6 +63,10 @@ VALUE hash_from_report(report_t report)
   if (report.has_lac) {
     rb_hash_aset(hash, make_symbol("lac"),        INT2NUM(report.lac));
   }
+  rb_hash_aset(hash, make_symbol("input_1"),      INT2NUM(report.input_1));
+  rb_hash_aset(hash, make_symbol("input_2"),      INT2NUM(report.input_2));
+  rb_hash_aset(hash, make_symbol("output_1"),     INT2NUM(report.output_1));
+  rb_hash_aset(hash, make_symbol("output_2"),     INT2NUM(report.output_2));
 
   switch (report.type) {
   case REPORT_TYPE_EXTENDED_DATA:
@@ -131,10 +131,6 @@ VALUE hash_from_report_raw(report_t report)
   rb_hash_aset(hash, make_symbol("has_modsts"),   INT2NUM(report.has_modsts));
   rb_hash_aset(hash, make_symbol("has_temp"),     INT2NUM(report.has_temp));
   rb_hash_aset(hash, make_symbol("id_len"),       INT2NUM(report.id_len));
-  rb_hash_aset(hash, make_symbol("input_1"),      INT2NUM(report.input_1));
-  rb_hash_aset(hash, make_symbol("input_2"),      INT2NUM(report.input_2));
-  rb_hash_aset(hash, make_symbol("output_1"),     INT2NUM(report.output_1));
-  rb_hash_aset(hash, make_symbol("output_2"),     INT2NUM(report.output_2));
   rb_hash_aset(hash, make_symbol("lat_south"),    INT2NUM(report.lat_south));
   rb_hash_aset(hash, make_symbol("lon_west"),     INT2NUM(report.lon_west));
   rb_hash_aset(hash, make_symbol("has_cog"),      INT2NUM(report.has_cog));
@@ -152,6 +148,10 @@ VALUE hash_from_report_raw(report_t report)
   rb_hash_aset(hash, make_symbol("cell_id"),      INT2NUM(report.cell_id));
   rb_hash_aset(hash, make_symbol("signal"),       INT2NUM(report.signal));
   rb_hash_aset(hash, make_symbol("lac"),          INT2NUM(report.lac));
+  rb_hash_aset(hash, make_symbol("input_1"),      INT2NUM(report.input_1));
+  rb_hash_aset(hash, make_symbol("input_2"),      INT2NUM(report.input_2));
+  rb_hash_aset(hash, make_symbol("output_1"),     INT2NUM(report.output_1));
+  rb_hash_aset(hash, make_symbol("output_2"),     INT2NUM(report.output_2));
 
   switch (report.type) {
   case REPORT_TYPE_EXTENDED_DATA:
