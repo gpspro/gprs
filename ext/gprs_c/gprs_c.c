@@ -73,8 +73,6 @@ VALUE hash_from_report(report_t report)
   {
     VALUE ext    = rb_hash_new();
 
-    rb_hash_aset(ext, make_symbol("ext_type"),   INT2NUM(report.ext_type));
-
     switch (report.ext_type) {
     case REPORT_DATA_TYPE_ADDITIONAL_IO:
     {
@@ -109,6 +107,7 @@ VALUE hash_from_report(report_t report)
       break;
     }
 
+    rb_hash_aset(hash, make_symbol("ext_type"),   INT2NUM(report.ext_type));
     rb_hash_aset(hash, make_symbol("ext"),        ext);
 
     break;
@@ -159,7 +158,6 @@ VALUE hash_from_report_raw(report_t report)
   {
     VALUE ext = rb_hash_new();
 
-    rb_hash_aset(ext, make_symbol("ext_type"),              INT2NUM(report.ext_type));
 
     switch (report.ext_type) {
     case REPORT_DATA_TYPE_ADDITIONAL_IO:
@@ -185,7 +183,8 @@ VALUE hash_from_report_raw(report_t report)
       break;
     }
 
-    rb_hash_aset(hash, make_symbol("ext"),                  ext);
+    rb_hash_aset(hash, make_symbol("ext_type"),          INT2NUM(report.ext_type));
+    rb_hash_aset(hash, make_symbol("ext"),               ext);
 
     break;
   }
