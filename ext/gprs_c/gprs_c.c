@@ -32,7 +32,7 @@ VALUE hash_from_report(report_t report)
   double latitude = report_stolat(report.lat, report.lat_south);
   double longitude = report_stolon(report.lon, report.lon_west);
 
-  strftime(time_str, sizeof(time_str), "%m/%d/%Y %H:%M:%S", &time);
+  strftime(time_str, sizeof(time_str), "%Y-%m-%dT%H:%M:%S+00:00", &time);
 
   rb_hash_aset(hash, make_symbol("device_id"),    INT2NUM(report.device_id));
   rb_hash_aset(hash, make_symbol("time_secs"),    INT2NUM(report.time));
