@@ -58,7 +58,7 @@ VALUE hash_from_report(report_t report)
   }
   if (report.has_cell) {
     rb_hash_aset(hash, make_symbol("cell_id"),    INT2NUM(report.cell_id));
-    rb_hash_aset(hash, make_symbol("signal"),     INT2NUM(report.signal));
+    rb_hash_aset(hash, make_symbol("signal_csq"), INT2NUM(report.signal));
   }
   if (report.has_lac) {
     rb_hash_aset(hash, make_symbol("lac"),        INT2NUM(report.lac));
@@ -146,7 +146,7 @@ VALUE hash_from_report_raw(report_t report)
   rb_hash_aset(hash, make_symbol("modsts"),       INT2NUM(report.modsts));
   rb_hash_aset(hash, make_symbol("temp"),         INT2NUM(report.temp));
   rb_hash_aset(hash, make_symbol("cell_id"),      INT2NUM(report.cell_id));
-  rb_hash_aset(hash, make_symbol("signal"),       INT2NUM(report.signal));
+  rb_hash_aset(hash, make_symbol("signal_csq"),   INT2NUM(report.signal));
   rb_hash_aset(hash, make_symbol("lac"),          INT2NUM(report.lac));
   rb_hash_aset(hash, make_symbol("input_1"),      INT2NUM(report.input_1));
   rb_hash_aset(hash, make_symbol("input_2"),      INT2NUM(report.input_2));
