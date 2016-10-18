@@ -106,7 +106,7 @@ VALUE hash_from_report(report_t report)
     {
       fc_txn_t * txn = &report.ext.fc_txn;
       rb_hash_aset(ext, make_symbol("fc_txn_id"),         INT2NUM(txn->txn_id));
-      rb_hash_aset(ext, make_symbol("fc_ticks"),          INT2NUM(txn->txn_id));
+      rb_hash_aset(ext, make_symbol("fc_ticks"),          INT2NUM(txn->ticks));
       break;
     }
     default:
@@ -189,7 +189,7 @@ VALUE hash_from_report_raw(report_t report)
     {
       fc_txn_t * txn = &report.ext.fc_txn;
       rb_hash_aset(ext, make_symbol("fc_txn_id"),       INT2NUM(txn->txn_id));
-      rb_hash_aset(ext, make_symbol("fc_ticks"),        INT2NUM(txn->txn_id));
+      rb_hash_aset(ext, make_symbol("fc_ticks"),        INT2NUM(txn->ticks));
       break;
     }
     default:
