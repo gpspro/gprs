@@ -11,12 +11,12 @@
 
 VALUE gprs = Qnil;
 
-VALUE parse_report(VALUE self, VALUE data, VALUE print);
+VALUE parse_report_c(VALUE self, VALUE data, VALUE print);
 
 void Init_gprs_c()
 {
   gprs = rb_define_module("GprsC");
-  rb_define_singleton_method(gprs, "parse_report", parse_report, 2);
+  rb_define_singleton_method(gprs, "parse_report_c", parse_report_c, 2);
 }
 
 VALUE make_symbol(const char * name)
@@ -197,7 +197,7 @@ VALUE hash_from_report_raw(report_t report)
   return hash;
 }
 
-VALUE parse_report(VALUE self, VALUE data, VALUE print)
+VALUE parse_report_c(VALUE self, VALUE data, VALUE print)
 {
   int size = (int)RARRAY_LEN(data);
   uint8_t packet[size];
