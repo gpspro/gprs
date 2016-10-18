@@ -225,6 +225,12 @@ int report_parse(uint8_t * buf, int size, report_t * reports)
   // Code
   if (report_has_code(report->type)) {
     report->code = gprs_read_byte(buf, &idx);
+
+    // this will detect an extended report before the code field was added
+    if (report->code > 0x24 && report->type == REPORT_TYPE_EXTENDED_DATA) {
+      report->code = 0;
+      idx--;
+    }
   }
 
   // Modsts
