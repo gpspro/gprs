@@ -102,13 +102,20 @@ VALUE hash_from_report(report_t report)
       }
       break;
     }
+    case REPORT_DATA_TYPE_FC_TXN_COMPLETE:
+    {
+      fc_txn_t * txn = &report.ext.fc_txn;
+      rb_hash_aset(ext, make_symbol("fc_txn_id"),         INT2NUM(txn->txn_id));
+      rb_hash_aset(ext, make_symbol("fc_ticks"),          INT2NUM(txn->txn_id));
+      break;
+    }
     default:
       // Do nothing
       break;
     }
 
-    rb_hash_aset(hash, make_symbol("ext_type"),   INT2NUM(report.ext_type));
-    rb_hash_aset(hash, make_symbol("ext"),        ext);
+    rb_hash_aset(hash, make_symbol("ext_type"),           INT2NUM(report.ext_type));
+    rb_hash_aset(hash, make_symbol("ext"),                ext);
 
     break;
   }
@@ -158,33 +165,39 @@ VALUE hash_from_report_raw(report_t report)
   {
     VALUE ext = rb_hash_new();
 
-
     switch (report.ext_type) {
     case REPORT_DATA_TYPE_ADDITIONAL_IO:
     {
       additional_io_t * addio = &report.ext.additional_io;
-      rb_hash_aset(ext, make_symbol("has_int_voltage"),  INT2NUM(addio->has_int_voltage));
-      rb_hash_aset(ext, make_symbol("has_ext_voltage"),  INT2NUM(addio->has_ext_voltage));
-      rb_hash_aset(ext, make_symbol("has_adc_input_1"),  INT2NUM(addio->has_adc_input_1));
-      rb_hash_aset(ext, make_symbol("has_adc_input_2"),  INT2NUM(addio->has_adc_input_2));
-      rb_hash_aset(ext, make_symbol("has_input_3"),      INT2NUM(addio->has_input_3));
-      rb_hash_aset(ext, make_symbol("has_output_3"),     INT2NUM(addio->has_output_3));
-      rb_hash_aset(ext, make_symbol("has_orientation"),  INT2NUM(addio->has_orientation));
-      rb_hash_aset(ext, make_symbol("int_voltage"),      INT2NUM(addio->int_voltage));
-      rb_hash_aset(ext, make_symbol("ext_voltage"),      INT2NUM(addio->ext_voltage));
-      rb_hash_aset(ext, make_symbol("adc_input_1"),      INT2NUM(addio->adc_input_1));
-      rb_hash_aset(ext, make_symbol("adc_input_2"),      INT2NUM(addio->adc_input_2));
-      rb_hash_aset(ext, make_symbol("input_3"),          INT2NUM(addio->input_3));
-      rb_hash_aset(ext, make_symbol("output_3"),         INT2NUM(addio->output_3));
-      rb_hash_aset(ext, make_symbol("orientation"),      INT2NUM(addio->orientation));
+      rb_hash_aset(ext, make_symbol("has_int_voltage"), INT2NUM(addio->has_int_voltage));
+      rb_hash_aset(ext, make_symbol("has_ext_voltage"), INT2NUM(addio->has_ext_voltage));
+      rb_hash_aset(ext, make_symbol("has_adc_input_1"), INT2NUM(addio->has_adc_input_1));
+      rb_hash_aset(ext, make_symbol("has_adc_input_2"), INT2NUM(addio->has_adc_input_2));
+      rb_hash_aset(ext, make_symbol("has_input_3"),     INT2NUM(addio->has_input_3));
+      rb_hash_aset(ext, make_symbol("has_output_3"),    INT2NUM(addio->has_output_3));
+      rb_hash_aset(ext, make_symbol("has_orientation"), INT2NUM(addio->has_orientation));
+      rb_hash_aset(ext, make_symbol("int_voltage"),     INT2NUM(addio->int_voltage));
+      rb_hash_aset(ext, make_symbol("ext_voltage"),     INT2NUM(addio->ext_voltage));
+      rb_hash_aset(ext, make_symbol("adc_input_1"),     INT2NUM(addio->adc_input_1));
+      rb_hash_aset(ext, make_symbol("adc_input_2"),     INT2NUM(addio->adc_input_2));
+      rb_hash_aset(ext, make_symbol("input_3"),         INT2NUM(addio->input_3));
+      rb_hash_aset(ext, make_symbol("output_3"),        INT2NUM(addio->output_3));
+      rb_hash_aset(ext, make_symbol("orientation"),     INT2NUM(addio->orientation));
+      break;
+    }
+    case REPORT_DATA_TYPE_FC_TXN_COMPLETE:
+    {
+      fc_txn_t * txn = &report.ext.fc_txn;
+      rb_hash_aset(ext, make_symbol("fc_txn_id"),       INT2NUM(txn->txn_id));
+      rb_hash_aset(ext, make_symbol("fc_ticks"),        INT2NUM(txn->txn_id));
       break;
     }
     default:
       break;
     }
 
-    rb_hash_aset(hash, make_symbol("ext_type"),          INT2NUM(report.ext_type));
-    rb_hash_aset(hash, make_symbol("ext"),               ext);
+    rb_hash_aset(hash, make_symbol("ext_type"),         INT2NUM(report.ext_type));
+    rb_hash_aset(hash, make_symbol("ext"),              ext);
 
     break;
   }

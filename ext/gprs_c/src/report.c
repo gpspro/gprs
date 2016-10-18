@@ -310,6 +310,15 @@ int report_parse(uint8_t * buf, int size, report_t * reports)
       }
       break;
     }
+    case REPORT_DATA_TYPE_FC_TXN_COMPLETE:
+    {
+      fc_txn_t * txn = &report->ext.fc_txn;
+
+      txn->txn_id = gprs_read_bytes(buf, &idx, 4);
+      txn->ticks = gprs_read_bytes(buf, &idx, 4);
+
+      break;
+    }
     default:
       // Unknown data type
       break;

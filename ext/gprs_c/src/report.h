@@ -32,25 +32,31 @@
                                         (type == REPORT_TYPE_CODED_COMP_POS)
 
 typedef struct  {
-  bool has_int_voltage;
-  bool has_ext_voltage;
-  bool has_adc_input_1;
-  bool has_adc_input_2;
-  bool has_input_3;
-  bool has_output_3;
-  bool has_orientation;
+  bool      has_int_voltage;
+  bool      has_ext_voltage;
+  bool      has_adc_input_1;
+  bool      has_adc_input_2;
+  bool      has_input_3;
+  bool      has_output_3;
+  bool      has_orientation;
 
-  uint16_t      int_voltage;
-  uint16_t      ext_voltage;
-  uint8_t       adc_input_1;
-  uint8_t       adc_input_2;
-  uint8_t       input_3;
-  uint8_t       output_3;
-  uint8_t       orientation;
+  uint16_t  int_voltage;
+  uint16_t  ext_voltage;
+  uint8_t   adc_input_1;
+  uint8_t   adc_input_2;
+  uint8_t   input_3;
+  uint8_t   output_3;
+  uint8_t   orientation;
 } additional_io_t;
 
+typedef struct {
+  uint32_t  txn_id;
+  uint32_t  ticks;
+} fc_txn_t;
+
 typedef union {
-  additional_io_t  additional_io;
+  additional_io_t additional_io;
+  fc_txn_t        fc_txn;
 } ext_t;
 
 // Basic report structure (grouped by byte fields)
