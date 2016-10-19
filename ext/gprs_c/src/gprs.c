@@ -93,9 +93,20 @@ int gprs_packet_type(uint8_t * buf, int size)
 
     // Let's just check to see if it's a report
     if (size >= GPRS_REPORT_MIN_SIZE) {
-      type = buf[1] & 0xF;
-      if (gprs_is_report_type(type)) {
-        ptype = GPRS_PACKET_REPORT;
+      // There are certain commands that are larger than 8 bytes. We filter them here
+      bool command =    (code == CMD_PARAM_TYPE_GSM_IP_PORT)
+                     || (code == CMD_PARAM_TYPE_CDMA_IP_PORT)
+                     || (code == CMD_PARAM_TYPE_ANALOG_EXT)
+                     || (code == CMD_PARAM_TYPE_ANALOG_GET)
+                     || (code == CMD_PARAM_TYPE_OUTPUT_SCH_LST)
+                     || (code == CMD_VAL_REMOTE_DIAG)
+                     || (code == CMD_PROG_CODE_REQ_FW_INFO);
+
+      if (!command) {
+        type = buf[1] & 0xF;
+        if (gprs_is_report_type(type)) {
+          ptype = GPRS_PACKET_REPORT;
+        }
       }
     }
   }
