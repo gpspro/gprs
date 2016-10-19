@@ -38,6 +38,21 @@ uint32_t gprs_read_bytes(uint8_t * buf, int * idx, int size)
   return val;
 }
 
+int gprs_to_signed(uint32_t val)
+{
+  int newval = val;
+
+  if (val > GPRS_8BIT_DIFF && val < GPRS_8BIT_MAX) {
+    newval = GPRS_8BIT_DIFF - val;
+  } else if (val > GPRS_16BIT_DIFF && val < GPRS_16BIT_MAX) {
+    newval = GPRS_16BIT_DIFF - val;
+  } else if (val > GPRS_24BIT_DIFF && val < GPRS_24BIT_MAX) {
+    newval = GPRS_24BIT_DIFF - val;
+  }
+
+  return newval;
+}
+
 // Checks packet format, unescapes data, and validates CRC
 // WARNING: Will modify the packet & size parameters
 int gprs_preprocess(uint8_t * packet, int * size)

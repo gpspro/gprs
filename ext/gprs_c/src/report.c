@@ -254,7 +254,96 @@ int report_parse(uint8_t * buf, int size, report_t * reports)
     report->lac = gprs_read_bytes(buf, &idx, 2);
   }
 
+  count++;
+
   switch (report->type) {
+  case REPORT_TYPE_COMP_POS:
+  case REPORT_TYPE_CODED_COMP_POS:
+  {
+    while (idx < size && count < REPORT_MAX_COMPRESSED_REPORTS) {
+      // Compressed fields
+      // NOTE: Time/Lat/Lon diff values may be positive or negative
+      uint8_t control, time_size, lat_size, lon_size, has_speed, has_io;
+      int time_diff, lat_diff, lon_diff;
+      uint8_t speed;
+      //uint8_t io;
+
+      report_t * report_next = &reports[count];
+
+      memset(report_next, 0, sizeof(report_t));
+
+      // Copy basic fields from previous report
+      report_next->device_id  = report->device_id;
+      report_next->type       = report->type;
+      report_next->has_gps    = true;
+      report_next->lat_south  = report->lat_south;
+      report_next->lon_west   = report->lon_west;
+
+      // Start reading
+      control = gprs_read_byte(buf, &idx);
+
+      // Read bitfields of control byte
+      time_size = (control & 0x03) >> 0;
+      lat_size  = (control & 0x0C) >> 2;
+      lon_size  = (control & 0x30) >> 4;
+      has_speed = (control & 0x40) >> 6;
+      has_io    = (control & 0x80) >> 7;
+
+      // Time Diff
+      if (time_size > 0) {
+        time_diff = gprs_read_bytes(buf, &idx, time_size);
+        time_diff = gprs_to_signed(time_diff);
+        report_next->time = report->time + time_diff;
+      } else {
+        report_next->time = report->time;
+      }
+
+      // Lat Diff
+      if (lat_size > 0) {
+        lat_diff = gprs_read_bytes(buf, &idx, lat_size);
+        lat_diff = gprs_to_signed(lat_diff);
+        report_next->lat = report->lat + lat_diff;
+      } else {
+        report_next->lat = report->lat;
+      }
+
+      // Lon Diff
+      if (lon_size > 0) {
+        lon_diff = gprs_read_bytes(buf, &idx, lon_size);
+        lon_diff = gprs_to_signed(lon_diff);
+        report_next->lon = report->lon + lon_diff;
+      } else {
+        report_next->lon = report->lon;
+      }
+
+      // Speed
+      if (has_speed) {
+        speed = gprs_read_byte(buf, &idx);
+        report_next->speed = speed;
+      } else {
+        report_next->speed = report->speed;
+      }
+
+      // IO
+      if (has_io) {
+        // NOTE: This is not supported by the device/protocol yet, but is reserved
+        // for the future. Also, there may be more bytes after this IO byte depending
+        // on flags that are set.
+        //io = gprs_read_byte(buf, &idx);
+      }
+
+      // Move to next item
+      report = report_next;
+      count++;
+    }
+
+    // For compressed reports, code of the original report applies to the
+    // LAST report in the packet.
+    report->code = reports[0].code;
+    reports[0].code = 0;
+
+    break;
+  }
   case REPORT_TYPE_EXTENDED_DATA:
   {
     report->ext_type = gprs_read_byte(buf, &idx);
@@ -330,8 +419,6 @@ int report_parse(uint8_t * buf, int size, report_t * reports)
     // Ignore
     break;
   }
-
-  count++;
 
   return count;
 }

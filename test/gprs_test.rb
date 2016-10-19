@@ -59,7 +59,11 @@ class GprsTest < Minitest::Test
     parse_report_multiple(true, false)
   end
 
-  def test_7_parse_report_bench_c
+  def test_7_parse_report_other_c
+    parse_report_other(true)
+  end
+
+  def test_8_parse_report_bench_c
     puts ""
     puts "# Benchmarking report parsing performance (C extension):"
 

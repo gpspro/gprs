@@ -27,6 +27,8 @@
 #define REPORT_DATA_TYPE_HART_VALUES      0xA0
 #define REPORT_DATA_TYPE_FC_TXN_COMPLETE  0xF0
 
+#define REPORT_MAX_COMPRESSED_REPORTS     10
+
 #define report_has_code(type)           (type == REPORT_TYPE_CODED_POS) || \
                                         (type == REPORT_TYPE_EXTENDED_DATA) || \
                                         (type == REPORT_TYPE_CODED_COMP_POS)

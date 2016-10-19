@@ -215,8 +215,8 @@ VALUE parse_report_c(VALUE self, VALUE data, VALUE print)
   int size = (int)RARRAY_LEN(data);
   uint8_t packet[size];
   report_t reports[10];
-  int i, rc;
-  VALUE result = rb_hash_new();
+  int i, rc, count;
+  VALUE results = rb_ary_new();
 
   // Convert Ruby array to uint8_t
   for (i = 0; i < size; i++) {
@@ -227,13 +227,18 @@ VALUE parse_report_c(VALUE self, VALUE data, VALUE print)
   rc = gprs_preprocess(packet, &size);
   if (rc == GPRS_RC_SUCCESS) {
     // Parse report
-    report_parse(packet, size, reports);
+    count = report_parse(packet, size, reports);
 
-    // Populate hash
-    result = hash_from_report(reports[0]);
+    for (i = 0; i < count; i++) {
+      // Create hash for report
+      VALUE result = hash_from_report(reports[i]);
+
+      // Add to array
+      rb_ary_push(results, result);
+    }
   } else {
     printf("Invalid report packet!\n");
   }
 
-  return result;
+  return results;
 }
