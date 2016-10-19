@@ -100,6 +100,8 @@
 #define GPRS_MSG_TYPE_EXT_REPORT        8
 #define GPRS_MSG_TYPE_CODED_POS_COMP    9
 
+#define GPRS_REPORT_MIN_SIZE            8
+
 #define gprs_is_report_type(type) (type == GPRS_MSG_TYPE_POSITION || \
                                    type == GPRS_MSG_TYPE_CODED_NUM_MSG || \
                                    type == GPRS_MSG_TYPE_POSITIONS_COMP || \

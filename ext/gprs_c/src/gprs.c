@@ -91,10 +91,9 @@ int gprs_packet_type(uint8_t * buf, int size)
       break;
     }
 
-    // Otherwise check if it's a report
-    if (ptype == GPRS_PACKET_UNKNOWN) {
+    // Let's just check to see if it's a report
+    if (size >= GPRS_REPORT_MIN_SIZE) {
       type = buf[1] & 0xF;
-
       if (gprs_is_report_type(type)) {
         ptype = GPRS_PACKET_REPORT;
       }
