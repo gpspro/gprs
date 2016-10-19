@@ -152,15 +152,21 @@ struct tm time_diff = {
 
 struct tm report_stotm(uint32_t secs)
 {
-  struct tm time;
+  struct tm report_tm, current_tm;
+  time_t ts, current;
+
+  // Detect DST
+  current = time(NULL);
+  current_tm = *localtime(&current);
+  time_diff.tm_isdst = current_tm.tm_isdst;
 
   // Convert diff to time_t and add secs
-  time_t ts = mktime(&time_diff) + secs;
+  ts = mktime(&time_diff) + secs;
 
   // Convert to tm struct
-  time = *localtime(&ts);
+  report_tm = *localtime(&ts);
 
-  return time;
+  return report_tm;
 }
 
 // Parse report from a buffer (requires that SOP, EOP, and CRC be removed)
