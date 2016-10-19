@@ -102,6 +102,17 @@
 
 #define GPRS_REPORT_MIN_SIZE            8
 
+#define gprs_is_cmd_large(code)   (code == CMD_PARAM_TYPE_GSM_IP_PORT || \
+                                   code == CMD_PARAM_TYPE_CDMA_IP_PORT || \
+                                   code == CMD_PARAM_TYPE_ANALOG_EXT || \
+                                   code == CMD_PARAM_TYPE_ANALOG_GET || \
+                                   code == CMD_PARAM_TYPE_OUTPUT_SCH_LST || \
+                                   code == CMD_VAL_REMOTE_DIAG || \
+                                   code == CMD_VAL_REMOTE_DIAG2 || \
+                                   code == CMD_PARAM_TYPE_FC_PUMP || \
+                                   code == CMD_PROG_CODE_REQ_FW_INFO)
+
+
 #define gprs_is_report_type(type) (type == GPRS_MSG_TYPE_POSITION || \
                                    type == GPRS_MSG_TYPE_CODED_NUM_MSG || \
                                    type == GPRS_MSG_TYPE_POSITIONS_COMP || \
