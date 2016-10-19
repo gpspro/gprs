@@ -11,12 +11,14 @@
 
 VALUE gprs = Qnil;
 
-VALUE parse_report_c(VALUE self, VALUE data, VALUE print);
+VALUE packet_type(VALUE self, VALUE data, VALUE print);
+VALUE parse_report(VALUE self, VALUE data, VALUE print);
 
 void Init_gprs_c()
 {
   gprs = rb_define_module("GprsC");
-  rb_define_singleton_method(gprs, "parse_report_c", parse_report_c, 2);
+  rb_define_singleton_method(gprs, "packet_type_c", packet_type, 2);
+  rb_define_singleton_method(gprs, "parse_report_c", parse_report, 2);
 }
 
 VALUE make_symbol(const char * name)
@@ -210,34 +212,66 @@ VALUE hash_from_report_raw(report_t report)
   return hash;
 }
 
-VALUE parse_report_c(VALUE self, VALUE data, VALUE print)
+int data_to_packet(VALUE data, uint8_t * packet)
 {
+  int i;
   int size = (int)RARRAY_LEN(data);
-  uint8_t packet[size];
-  report_t reports[10];
-  int i, rc, count;
-  VALUE results = rb_ary_new();
 
   // Convert Ruby array to uint8_t
   for (i = 0; i < size; i++) {
     packet[i] = NUM2UINT(rb_ary_entry(data, i));
   }
 
-  // Preprocess
-  rc = gprs_preprocess(packet, &size);
+  return size;
+}
+
+VALUE packet_type(VALUE self, VALUE data, VALUE print)
+{
+  uint8_t packet[1024];
+  int size = data_to_packet(data, packet);
+  bool verbose = (print == Qtrue);
+  int rc, type = GPRS_PACKET_UNKNOWN;
+
+  rc = gprs_preprocess(packet, &size, verbose);
   if (rc == GPRS_RC_SUCCESS) {
-    // Parse report
-    count = report_parse(packet, size, reports);
+    type = gprs_packet_type(packet, size);
+  } else {
+    if (verbose) printf("Invalid GPRS packet! Error: %d\n", rc);
+  }
 
-    for (i = 0; i < count; i++) {
-      // Create hash for report
-      VALUE result = hash_from_report(reports[i]);
+  return INT2NUM(type);
+}
 
-      // Add to array
-      rb_ary_push(results, result);
+VALUE parse_report(VALUE self, VALUE data, VALUE print)
+{
+  uint8_t packet[1024];
+  int size = data_to_packet(data, packet);
+  bool verbose = (print == Qtrue);
+  report_t reports[10];
+  int i, rc, count;
+  VALUE results = rb_ary_new();
+
+  // Preprocess
+  rc = gprs_preprocess(packet, &size, verbose);
+  if (rc == GPRS_RC_SUCCESS) {
+    int type = gprs_packet_type(packet, size);
+
+    if (type == GPRS_PACKET_REPORT) {
+      // Parse report
+      count = report_parse(packet, size, reports);
+
+      for (i = 0; i < count; i++) {
+        // Create hash for report
+        VALUE result = hash_from_report(reports[i]);
+
+        // Add to array
+        rb_ary_push(results, result);
+      }
+    } else {
+      if (verbose) printf("Invalid report packet (this is of type %d)\n", type);
     }
   } else {
-    printf("Invalid report packet!\n");
+    if (verbose) printf("Invalid GPRS packet! Error: %d\n", rc);
   }
 
   return results;

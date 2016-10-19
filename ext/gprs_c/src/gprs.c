@@ -1,9 +1,11 @@
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
 #include "gprs.h"
+#include "defs.h"
 
 // Protocol
 #define GPRS_SOP            0x28
@@ -53,9 +55,58 @@ int gprs_to_signed(uint32_t val)
   return newval;
 }
 
+// Detect packet type based on size, type, and code
+// NOTE: Packet must be preprocessed
+int gprs_packet_type(uint8_t * buf, int size)
+{
+  int ptype = GPRS_PACKET_UNKNOWN;
+
+  if (size == 1) {
+    ptype = GPRS_PACKET_ACK;
+  } else if (size > 1) {
+    // Type and code are always at the same spot in a packet
+    uint8_t type = buf[0] & 0xF;
+    uint8_t code = buf[1];
+
+    switch (type) {
+    case CMD_TYPE_CONFIG_MSG:
+      if (gprs_is_config_msg(code)) {
+        ptype = GPRS_PACKET_COMMAND;
+      }
+      break;
+    case CMD_TYPE_PROGRAM:
+      if (gprs_is_program_code(code)) {
+        ptype = GPRS_PACKET_PROGRAM;
+      }
+      break;
+    case CMD_TYPE_SENDVAL_REPLY:
+      if (gprs_is_sendval_reply(code)) {
+        ptype = GPRS_PACKET_COMMAND;
+      }
+      break;
+    case CMD_TYPE_PARAM_REPLY:
+      if (gprs_is_param_reply(code)) {
+        ptype = GPRS_PACKET_COMMAND;
+      }
+      break;
+    }
+
+    // Otherwise check if it's a report
+    if (ptype == GPRS_PACKET_UNKNOWN) {
+      type = buf[1] & 0xF;
+
+      if (gprs_is_report_type(type)) {
+        ptype = GPRS_PACKET_REPORT;
+      }
+    }
+  }
+
+  return ptype;
+}
+
 // Checks packet format, unescapes data, and validates CRC
 // WARNING: Will modify the packet & size parameters
-int gprs_preprocess(uint8_t * packet, int * size)
+int gprs_preprocess(uint8_t * packet, int * size, bool verbose)
 {
   int i, idx = 0;
   uint8_t buf[*size];
@@ -70,7 +121,7 @@ int gprs_preprocess(uint8_t * packet, int * size)
 
   // Check for SOP and EOP
   if (packet[0] != GPRS_SOP || packet[*size - 1] != GPRS_EOP) {
-    printf("Invalid Packet: Missing SOP or EOP byte.\n");
+    if (verbose) printf("Invalid Packet: Missing SOP or EOP byte.\n");
     return GPRS_RC_ERROR_INVALID;
   }
 
@@ -95,7 +146,7 @@ int gprs_preprocess(uint8_t * packet, int * size)
     ccrc ^= packet[i];
   }
   if (crc != ccrc) {
-    printf("Invalid CRC: %d != %d.\n", crc, ccrc);
+    if (verbose) printf("Invalid CRC: %d != %d.\n", crc, ccrc);
     return GPRS_RC_ERROR_CRC;
   }
 

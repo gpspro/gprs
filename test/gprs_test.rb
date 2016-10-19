@@ -93,4 +93,8 @@ class GprsTest < Minitest::Test
     end
   end
 
+  def test_9_detect_packet_types
+    detect_packet_types(true)
+  end
+
 end
