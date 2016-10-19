@@ -109,8 +109,12 @@ int gprs_preprocess(uint8_t * packet, int * size, bool verbose)
 {
   int i, idx = 0;
   uint8_t buf[*size];
-
   uint8_t crc, ccrc;
+
+  if (*size < GPRS_PACKET_MIN_SIZE) {
+    if (verbose) printf("Invalid Packet: Less than minimum size.\n");
+    return GPRS_RC_ERROR_INVALID;
+  }
 
   // Remove last newline if present
   if (packet[*size - 1] == GPRS_NL) {

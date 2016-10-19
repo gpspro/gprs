@@ -5,7 +5,7 @@ require "gprs_c"
 module GprsC
   # If it's a string with format "0xA 0xB 0xC..." convert to byte array
   def self.process_packet(packet)
-    if packet.is_a? String and packet.include? " 0x"
+    if packet.is_a? String and packet.include? "0x"
       packet.split(" ").map{ |x| x.gsub("0x", "").to_i(16) }
     else
       packet

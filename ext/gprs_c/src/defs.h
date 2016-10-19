@@ -101,6 +101,7 @@
 #define GPRS_MSG_TYPE_CODED_POS_COMP    9
 
 #define GPRS_REPORT_MIN_SIZE            8
+#define GPRS_PACKET_MIN_SIZE            4
 #define GPRS_PACKET_MAX_SIZE            10240
 
 // Commands that exceed the report min size (above)
