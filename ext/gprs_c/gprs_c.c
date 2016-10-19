@@ -6,6 +6,7 @@
 
 #include <ruby.h>
 
+#include "defs.h"
 #include "gprs.h"
 #include "report.h"
 
@@ -227,10 +228,13 @@ int data_to_packet(VALUE data, uint8_t * packet)
 
 VALUE packet_type(VALUE self, VALUE data, VALUE print)
 {
-  uint8_t packet[1024];
+  uint8_t packet[GPRS_PACKET_MAX_SIZE];
   int size = data_to_packet(data, packet);
   bool verbose = (print == Qtrue);
   int rc, type = GPRS_PACKET_UNKNOWN;
+
+  // Size limit
+  if (size > GPRS_PACKET_MAX_SIZE) size = GPRS_PACKET_MAX_SIZE;
 
   rc = gprs_preprocess(packet, &size, verbose);
   if (rc == GPRS_RC_SUCCESS) {
@@ -244,12 +248,15 @@ VALUE packet_type(VALUE self, VALUE data, VALUE print)
 
 VALUE parse_report(VALUE self, VALUE data, VALUE print)
 {
-  uint8_t packet[1024];
+  uint8_t packet[GPRS_PACKET_MAX_SIZE];
   int size = data_to_packet(data, packet);
   bool verbose = (print == Qtrue);
   report_t reports[10];
   int i, rc, count;
   VALUE results = rb_ary_new();
+
+  // Size limit
+  if (size > GPRS_PACKET_MAX_SIZE) size = GPRS_PACKET_MAX_SIZE;
 
   // Preprocess
   rc = gprs_preprocess(packet, &size, verbose);
