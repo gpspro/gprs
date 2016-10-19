@@ -45,6 +45,50 @@ def packet_types
   ]
 end
 
+def parse_report_single(log = true)
+  if log
+    puts ""
+    puts "# Parsing 1 report packet..."
+  end
+
+  reports = GprsC.parse_report(report_single, log)
+
+  if log
+    puts reports
+    puts ""
+  end
+end
+
+def parse_report_multiple(log = true)
+  if log
+    puts ""
+    puts "# Parsing #{report_multiple.length} report packets..."
+  end
+
+  report_multiple.each do |packet|
+    reports = GprsC.parse_report(packet, log)
+    if log
+      puts reports
+      puts ""
+    end
+  end
+end
+
+def parse_report_other(log = true)
+  if log
+    puts ""
+    puts "# Parsing several non-additional-io packets..."
+  end
+
+  report_other.each do |packet|
+    reports = GprsC.parse_report(packet)
+    if log
+      puts reports
+      puts ""
+    end
+  end
+end
+
 def detect_packet_types(log = true)
   if log
     puts ""
@@ -57,75 +101,6 @@ def detect_packet_types(log = true)
     if log
       puts "Packet: #{packet}"
       puts "Packet Type: #{type}"
-    end
-  end
-end
-
-def parse_report_single(log = true, bindata = true)
-  parse_method = ""
-  if bindata
-    parse_method = "BinData"
-  else
-    parse_method = "C Extension"
-  end
-
-  if log
-    puts ""
-    puts "# Parsing 1 report packet (#{parse_method})..."
-  end
-
-  reports = nil
-  if bindata
-    reports = Gprs.parse_report(report_single)
-  else
-    reports = GprsC.parse_report(report_single, log)
-  end
-
-  if log
-    puts reports
-    puts ""
-  end
-end
-
-def parse_report_multiple(log = true, bindata = true)
-  parse_method = ""
-  if bindata
-    parse_method = "BinData"
-  else
-    parse_method = "C Extension"
-  end
-
-  if log
-    puts ""
-    puts "# Parsing #{report_multiple.length} report packets (#{parse_method})..."
-  end
-
-  report_multiple.each do |packet|
-    reports = nil
-    if bindata
-      reports = Gprs.parse_report(packet)
-    else
-      reports = GprsC.parse_report(packet, log)
-    end
-    if log
-      puts reports
-      puts ""
-    end
-  end
-end
-
-def parse_report_other(log = true)
-  parse_method = "C Extension"
-  if log
-    puts ""
-    puts "# Parsing several non-additional-io packets (#{parse_method})..."
-  end
-
-  report_other.each do |packet|
-    reports = GprsC.parse_report(packet)
-    if log
-      puts reports
-      puts ""
     end
   end
 end
