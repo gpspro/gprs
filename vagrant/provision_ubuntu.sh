@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VAGRANT_USER=ubuntu
+VAGRANT_USER=vagrant
 
 # Prerequisites
 echo "Installing/updating base packages..."
