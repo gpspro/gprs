@@ -10,7 +10,7 @@ sudo apt-get update
 sudo apt-get -y install zsh vim curl git build-essential htop tmux valgrind
 
 # Ruby Dependencies
-sudo apt-get -y install ruby
+sudo apt-get -y install ruby ruby-dev
 
 # Bundler for gprs gem
 sudo gem install bundler
