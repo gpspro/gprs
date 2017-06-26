@@ -7,24 +7,73 @@
 #include <ruby.h>
 
 #include "defs.h"
+#include "cmd.h"
 #include "gprs.h"
 #include "report.h"
 
 VALUE gprs = Qnil;
 
 VALUE packet_type(VALUE self, VALUE data, VALUE print);
-VALUE parse_report(VALUE self, VALUE data, VALUE print);
+VALUE packet_parse(VALUE self, VALUE data, VALUE print);
 
 void Init_gprs_c()
 {
   gprs = rb_define_module("GprsC");
   rb_define_singleton_method(gprs, "packet_type_c", packet_type, 2);
-  rb_define_singleton_method(gprs, "parse_report_c", parse_report, 2);
+  rb_define_singleton_method(gprs, "packet_parse_c", packet_parse, 2);
 }
 
 VALUE make_symbol(const char * name)
 {
   return ID2SYM(rb_intern(name));
+}
+
+VALUE hash_from_command(cmd_t * cmd)
+{
+  char buf[20];
+
+  VALUE hash = rb_hash_new();
+  rb_hash_aset(hash, make_symbol("type"), INT2NUM(cmd->headers.type));
+  rb_hash_aset(hash, make_symbol("ref"),  INT2NUM(cmd->headers.ref));
+  rb_hash_aset(hash, make_symbol("code"), INT2NUM(cmd->headers.code));
+
+  VALUE fields = rb_hash_new();
+  switch (cmd->headers.type) {
+  // Replies to CMD_PARAM_TYPE_SENDVAL
+  case CMD_TYPE_SENDVAL_REPLY:
+    switch (cmd->headers.code) {
+    case CMD_VAL_REMOTE_DIAG:
+    {
+      cmd_diag_t * diag = &cmd->data.diag;
+
+      sprintf(buf, "v%d.%d.%d", diag->version_major,
+                                diag->version_minor,
+                                diag->version_revision);
+
+      rb_hash_aset(fields, make_symbol("firmware_version"), rb_str_new2(buf));
+      rb_hash_aset(fields, make_symbol("modem_status"),     INT2NUM(diag->modem_status));
+      rb_hash_aset(fields, make_symbol("modem_signal"),     INT2NUM(diag->modem_signal));
+      rb_hash_aset(fields, make_symbol("gps_status"),       INT2NUM(diag->gps_status));
+
+      sprintf(buf, "%.02fV", (diag->int_voltage / 100.0));
+      rb_hash_aset(fields, make_symbol("int_voltage"),      rb_str_new2(buf));
+
+      sprintf(buf, "%.02fV", (diag->ext_voltage / 100.0));
+      rb_hash_aset(fields, make_symbol("ext_voltage"),      rb_str_new2(buf));
+      break;
+    }
+    default:
+      // Unknown code
+      break;
+    }
+  default:
+    // Unknown type
+    break;
+  }
+
+  rb_hash_aset(hash, make_symbol("fields"), fields);
+
+  return hash;
 }
 
 VALUE hash_from_report(report_t report)
@@ -246,12 +295,11 @@ VALUE packet_type(VALUE self, VALUE data, VALUE print)
   return INT2NUM(type);
 }
 
-VALUE parse_report(VALUE self, VALUE data, VALUE print)
+VALUE packet_parse(VALUE self, VALUE data, VALUE print)
 {
   uint8_t packet[GPRS_PACKET_MAX_SIZE];
   int size = data_to_packet(data, packet);
   bool verbose = (print == Qtrue);
-  report_t reports[10];
   int i, rc, count;
   VALUE results = rb_ary_new();
 
@@ -263,7 +311,20 @@ VALUE parse_report(VALUE self, VALUE data, VALUE print)
   if (rc == GPRS_RC_SUCCESS) {
     int type = gprs_packet_type(packet, size);
 
-    if (type == GPRS_PACKET_REPORT) {
+    if (type == GPRS_PACKET_COMMAND) {
+      cmd_t cmd;
+      
+      // Parse command
+      cmd_parse(packet, size, &cmd);
+
+      // Create hash for report
+      VALUE result = hash_from_command(&cmd);
+
+      // Add to array
+      rb_ary_push(results, result);
+    } else if (type == GPRS_PACKET_REPORT) {
+      report_t reports[10];
+
       // Parse report
       count = report_parse(packet, size, reports);
 
@@ -275,7 +336,7 @@ VALUE parse_report(VALUE self, VALUE data, VALUE print)
         rb_ary_push(results, result);
       }
     } else {
-      if (verbose) printf("Invalid report packet (this is of type %d)\n", type);
+      if (verbose) printf("Don't know how to parse packet of type %d\n", type);
     }
   } else {
     if (verbose) printf("Invalid GPRS packet! Error: %d\n", rc);
