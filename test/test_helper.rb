@@ -114,15 +114,17 @@ def detect_packet_types(log = true)
   end
 end
 
-def parse_command_single(log = true)
+def parse_commands(log = true)
   if log
     puts ""
     puts "# Parsing single command packet..."
   end
 
-  command = GprsC.packet_parse(commands[0], true)
-  if log
-    puts command
-    puts ""
+  commands.each do |packet|
+    command = GprsC.packet_parse(packet, true)
+    if log
+      puts command
+      puts ""
+    end
   end
 end

@@ -30,7 +30,8 @@ VALUE make_symbol(const char * name)
 
 VALUE hash_from_command(cmd_t * cmd)
 {
-  char buf[20];
+  char key_buf[50];
+  char val_buf[100];
 
   VALUE hash = rb_hash_new();
   rb_hash_aset(hash, make_symbol("type"), INT2NUM(cmd->headers.type));
@@ -46,20 +47,73 @@ VALUE hash_from_command(cmd_t * cmd)
     {
       cmd_diag_t * diag = &cmd->data.diag;
 
-      sprintf(buf, "v%d.%d.%d", diag->version_major,
+      sprintf(val_buf, "v%d.%d.%d", diag->version_major,
                                 diag->version_minor,
                                 diag->version_revision);
 
-      rb_hash_aset(fields, make_symbol("firmware_version"), rb_str_new2(buf));
+      rb_hash_aset(fields, make_symbol("firmware_version"), rb_str_new2(val_buf));
       rb_hash_aset(fields, make_symbol("modem_status"),     INT2NUM(diag->modem_status));
       rb_hash_aset(fields, make_symbol("modem_signal"),     INT2NUM(diag->modem_signal));
       rb_hash_aset(fields, make_symbol("gps_status"),       INT2NUM(diag->gps_status));
 
-      sprintf(buf, "%.02fV", (diag->int_voltage / 100.0));
-      rb_hash_aset(fields, make_symbol("int_voltage"),      rb_str_new2(buf));
+      sprintf(val_buf, "%.02fV", (diag->int_voltage / 100.0));
+      rb_hash_aset(fields, make_symbol("int_voltage"),      rb_str_new2(val_buf));
 
-      sprintf(buf, "%.02fV", (diag->ext_voltage / 100.0));
-      rb_hash_aset(fields, make_symbol("ext_voltage"),      rb_str_new2(buf));
+      sprintf(val_buf, "%.02fV", (diag->ext_voltage / 100.0));
+      rb_hash_aset(fields, make_symbol("ext_voltage"),      rb_str_new2(val_buf));
+      break;
+    }
+    case CMD_VAL_REMOTE_DIAG2:
+    {
+      cmd_diag2_t * diag2 = &cmd->data.diag2;
+
+      sprintf(val_buf, "v%d.%d.%d", diag2->version_major,
+                                    diag2->version_minor,
+                                    diag2->version_revision);
+
+      rb_hash_aset(fields, make_symbol("firmware_version"), rb_str_new2(val_buf));
+      rb_hash_aset(fields, make_symbol("modem_status"),     INT2NUM(diag2->modem_status));
+      rb_hash_aset(fields, make_symbol("modem_signal"),     INT2NUM(diag2->modem_signal));
+      rb_hash_aset(fields, make_symbol("gps_fix"),          INT2NUM(diag2->gps_fix));
+      rb_hash_aset(fields, make_symbol("gps_satellites"),   INT2NUM(diag2->gps_satellites));
+
+      if (diag2->has_int_voltage) {
+        sprintf(val_buf, "%.02fV", (diag2->int_voltage / 100.0));
+        rb_hash_aset(fields, make_symbol("int_voltage"),    rb_str_new2(val_buf));
+      }
+
+      if (diag2->has_ext_voltage) {
+        sprintf(val_buf, "%.02fV", (diag2->ext_voltage / 100.0));
+        rb_hash_aset(fields, make_symbol("ext_voltage"),    rb_str_new2(val_buf));
+      }
+
+      if (diag2->has_temperature) {
+        sprintf(val_buf, "%dF", diag2->temperature);
+        rb_hash_aset(fields, make_symbol("temperature"),    rb_str_new2(val_buf));
+      }
+
+      for (int i = 0; i < GPRS_CMD_DIAG_INPUTS_MAX; i++) {
+        if (diag2->input_present[i]) {
+          sprintf(key_buf, "input_%d", i + 1);
+          rb_hash_aset(fields, make_symbol(key_buf),        INT2NUM(diag2->input_values[i]));
+        }
+      }
+
+      for (int i = 0; i < GPRS_CMD_DIAG_OUTPUTS_MAX; i++) {
+        if (diag2->output_present[i]) {
+          sprintf(key_buf, "output_%d", i + 1);
+          rb_hash_aset(fields, make_symbol(key_buf),        INT2NUM(diag2->output_values[i]));
+        }
+      }
+
+      for (int i = 0; i < GPRS_CMD_DIAG_ANALOGS_MAX; i++) {
+        if (diag2->analog_present[i]) {
+          sprintf(key_buf, "analog_%d", i + 1);
+          sprintf(val_buf, "%.02fV", (diag2->analog_values[i] / 1000.0));
+          rb_hash_aset(fields, make_symbol(key_buf),        rb_str_new2(val_buf));
+        }
+      }
+
       break;
     }
     default:
@@ -71,7 +125,10 @@ VALUE hash_from_command(cmd_t * cmd)
     break;
   }
 
-  rb_hash_aset(hash, make_symbol("fields"), fields);
+  // Only add fields if we read them from the command
+  if (NUM2INT(rb_hash_size(fields)) > 0) {
+    rb_hash_aset(hash, make_symbol("fields"), fields);
+  }
 
   return hash;
 }
@@ -313,7 +370,7 @@ VALUE packet_parse(VALUE self, VALUE data, VALUE print)
 
     if (type == GPRS_PACKET_COMMAND) {
       cmd_t cmd;
-      
+
       // Parse command
       cmd_parse(packet, size, &cmd);
 

@@ -358,13 +358,13 @@
 #define CMD_PARAM_SIREN_OFF           2
 #define CMD_PARAM_SIREN_ON            130
 
-#define CMD_PROG_CODE_START             0x1
-#define CMD_PROG_CODE_DATA              0x2
-#define CMD_PROG_CODE_CANCEL            0x3
-#define CMD_PROG_CODE_RESUME            0x4
-#define CMD_PROG_CODE_END               0x5
-#define CMD_PROG_CODE_REQ_FW            0x6
-#define CMD_PROG_CODE_REQ_FW_INFO       0x7
+#define CMD_PROG_CODE_START           0x1
+#define CMD_PROG_CODE_DATA            0x2
+#define CMD_PROG_CODE_CANCEL          0x3
+#define CMD_PROG_CODE_RESUME          0x4
+#define CMD_PROG_CODE_END             0x5
+#define CMD_PROG_CODE_REQ_FW          0x6
+#define CMD_PROG_CODE_REQ_FW_INFO     0x7
 
 #ifdef THERMOKING
   #define GPRS_RID_TK_TEMPS           0xC1

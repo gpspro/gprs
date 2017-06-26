@@ -59,6 +59,6 @@ class GprsTest < Minitest::Test
   end
 
   def test_6_parse_command
-    parse_command_single(true)
+    parse_commands(true)
   end
 end
