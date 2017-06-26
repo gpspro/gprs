@@ -45,13 +45,22 @@ def packet_types
   ]
 end
 
+# Packet #1: Diag Reply
+# Packet #2: Diag V2 Reply
+def commands
+  [
+    "0x28 0xD6 0x49 0x0 0x7 0x10 0xA8 0x1 0x9 0x1 0xA1 0x1 0x33 0x5 0x2F 0x29",
+    "0x28 0x56 0x4A 0x37 0x0 0x7 0x10 0xA8 0x1 0x10 0x8D 0x10 0xA9 0xA4 0x1 0x30 0x7 0x7B 0x13 0x7 0x3 0x0 0x0 0x0 0x0 0xDF 0x29"
+  ]
+end
+
 def parse_report_single(log = true)
   if log
     puts ""
     puts "# Parsing 1 report packet..."
   end
 
-  reports = GprsC.parse_report(report_single, log)
+  reports = GprsC.packet_parse(report_single, log)
 
   if log
     puts reports
@@ -66,7 +75,7 @@ def parse_report_multiple(log = true)
   end
 
   report_multiple.each do |packet|
-    reports = GprsC.parse_report(packet, log)
+    reports = GprsC.packet_parse(packet, log)
     if log
       puts reports
       puts ""
@@ -81,7 +90,7 @@ def parse_report_other(log = true)
   end
 
   report_other.each do |packet|
-    reports = GprsC.parse_report(packet)
+    reports = GprsC.packet_parse(packet)
     if log
       puts reports
       puts ""
@@ -102,5 +111,18 @@ def detect_packet_types(log = true)
       puts "Packet: #{packet}"
       puts "Packet Type: #{type}"
     end
+  end
+end
+
+def parse_command_single(log = true)
+  if log
+    puts ""
+    puts "# Parsing single command packet..."
+  end
+
+  command = GprsC.packet_parse(commands[0], true)
+  if log
+    puts command
+    puts ""
   end
 end

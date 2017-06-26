@@ -58,4 +58,7 @@ class GprsTest < Minitest::Test
     detect_packet_types(true)
   end
 
+  def test_6_parse_command
+    parse_command_single(true)
+  end
 end

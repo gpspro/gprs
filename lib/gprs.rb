@@ -18,9 +18,9 @@ module GprsC
     GprsC.packet_type_c(packet, log)
   end
 
-  def self.parse_report(packet, log = false)
+  def self.packet_parse(packet, log = false)
     packet = process_packet(packet)
 
-    GprsC.parse_report_c(packet, log)
+    GprsC.packet_parse_c(packet, log)
   end
 end
