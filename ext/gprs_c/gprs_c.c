@@ -15,12 +15,16 @@ VALUE gprs = Qnil;
 
 VALUE packet_type(VALUE self, VALUE data, VALUE print);
 VALUE packet_parse(VALUE self, VALUE data, VALUE print);
+VALUE packet_process(VALUE self, VALUE data, VALUE print);
+
 
 void Init_gprs_c()
 {
   gprs = rb_define_module("GprsC");
   rb_define_singleton_method(gprs, "packet_type_c", packet_type, 2);
   rb_define_singleton_method(gprs, "packet_parse_c", packet_parse, 2);
+  rb_define_singleton_method(gprs, "packet_parse_c", packet_parse, 2);
+  rb_define_singleton_method(gprs, "packet_process_c", packet_process, 2);
 }
 
 VALUE make_symbol(const char * name)
@@ -453,6 +457,18 @@ int data_to_packet(VALUE data, uint8_t * packet)
   return size;
 }
 
+VALUE packet_to_data(uint8_t * packet, int size)
+{
+  VALUE data = rb_ary_new();
+
+  // Convert uint8_t array to Ruby array
+  for (int i = 0; i < size; i++) {
+    rb_ary_push(data, UINT2NUM(packet[i]));
+  }
+
+  return data;
+}
+
 VALUE packet_type(VALUE self, VALUE data, VALUE print)
 {
   uint8_t packet[GPRS_PACKET_MAX_SIZE];
@@ -529,4 +545,26 @@ VALUE packet_parse(VALUE self, VALUE data, VALUE print)
   }
 
   return results;
+}
+
+VALUE packet_process(VALUE self, VALUE data, VALUE print)
+{
+  uint8_t packet[GPRS_PACKET_MAX_SIZE];
+  int size = data_to_packet(data, packet);
+  bool verbose = (print == Qtrue);
+  int rc;
+
+  VALUE processedData;
+
+  // Size limit
+  if (size > GPRS_PACKET_MAX_SIZE) size = GPRS_PACKET_MAX_SIZE;
+
+  rc = gprs_preprocess(packet, &size, verbose);
+  if (rc == GPRS_RC_SUCCESS) {
+    processedData = packet_to_data(packet, size);
+  } else {
+    if (verbose) printf("Invalid GPRS packet! Error: %d\n", rc);
+  }
+
+  return processedData;
 }

@@ -58,7 +58,63 @@ class GprsTest < Minitest::Test
     detect_packet_types(true)
   end
 
-  def test_6_parse_command
+  def test_6_parse_commands
     parse_commands(true)
+  end
+
+  def test_7_parse_commands_kaitai
+    parse_commands_kaitai(true)
+  end
+
+  def test_8_parse_command_bench_c
+    puts ""
+    puts "# Benchmarking command parsing performance (C Extension):"
+
+    Benchmark.bm(40) do |x|
+
+      x.report("5000 packets (1 command 5000 times)") do
+        for i in 0..5000
+          parse_command_c(false)
+        end
+      end
+
+      x.report("10000 packets (1 command 10000 times)") do
+        for i in 0..10000
+          parse_command_c(false)
+        end
+      end
+
+      x.report("100000 packets (1 command 100000 times)") do
+        for i in 0..100000
+          parse_command_c(false)
+        end
+      end
+    end
+  end
+
+  def test_9_parse_command_bench_kaitai
+    puts ""
+    puts "# Benchmarking command parsing performance (Kaitai Struct):"
+
+    Benchmark.bm(40) do |x|
+
+      x.report("5000 packets (1 command 5000 times)") do
+        for i in 0..5000
+          parse_command_kaitai(false)
+        end
+      end
+
+      x.report("10000 packets (1 command 10000 times)") do
+        for i in 0..10000
+          parse_command_kaitai(false)
+        end
+      end
+
+      x.report("100000 packets (1 command 100000 times)") do
+        for i in 0..100000
+          parse_command_kaitai(false)
+        end
+      end
+    end
   end
 end

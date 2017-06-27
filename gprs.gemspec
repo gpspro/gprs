@@ -32,6 +32,8 @@ Gem::Specification.new do |spec|
   spec.extensions    << "ext/gprs_c/extconf.rb"
 
   spec.add_dependency "bindata"
+  spec.add_dependency "kaitai-struct"
+  spec.add_dependency "require_all"
 
   spec.add_development_dependency "bundler", "~> 1.13"
   spec.add_development_dependency "rake", "~> 10.0"

@@ -1,6 +1,11 @@
 
-require "gprs/version"
+require "gprs/version.rb"
+
 require "gprs_c"
+
+# Kaitai files
+require "require_all"
+require_all "lib/kaitai"
 
 module GprsC
   # If it's a string with format "0xA 0xB 0xC..." convert to byte array
@@ -23,4 +28,16 @@ module GprsC
 
     GprsC.packet_parse_c(packet, log)
   end
+
+  def self.packet_parse_kaitai(packet, log = false)
+    # Convert to readable format
+    packet = process_packet(packet)
+
+    # Process with GPRS c extension
+    processed = GprsC.packet_process_c(packet, log).pack("c*")
+
+    # Parse with Kaitai Struct
+    GprsCommand.new(Kaitai::Struct::Stream.new(processed))
+  end
+
 end
