@@ -7,6 +7,24 @@
 #include "defs.h"
 #include "cmd.h"
 
+int output_set_rule_size(uint8_t code)
+{
+  int size = 1;
+  switch (code) {
+  // 2 Bytes
+  case CMD_OUTPUT_RULE_INT_VOLTAGE:
+  case CMD_OUTPUT_RULE_EXT_VOLTAGE:
+  case CMD_OUTPUT_RULE_ANALOG_1_VOLTAGE:
+  case CMD_OUTPUT_RULE_ANALOG_2_VOLTAGE:
+    size = 2;
+    break;
+  default:
+    break;
+  }
+
+  return size;
+}
+
 void cmd_parse(uint8_t * buf, int size, cmd_t * cmd)
 {
   int idx = 0;
@@ -24,13 +42,86 @@ void cmd_parse(uint8_t * buf, int size, cmd_t * cmd)
   memset(&cmd->data, 0, sizeof(cmd_data_t));
 
   switch (cmd->headers.type) {
+  // CMD_TYPE_CONFIG_MSG requests
+  case CMD_TYPE_CONFIG_MSG:
+    switch (cmd->headers.code) {
+    case CMD_PARAM_TYPE_POSITION:
+      // No fields
+      break;
+    case CMD_PARAM_TYPE_SENDVAL:
+      cmd->data.sendval_request = gprs_read_byte(buf, &idx);
+      break;;
+    case CMD_PARAM_TYPE_REQUEST_PARAM:
+      cmd->data.param_request   = gprs_read_byte(buf, &idx);
+      break;
+    case CMD_PARAM_TYPE_FC_PUMP:
+    {
+      cmd_req_fc_pump_t * fc_pump = &cmd->data.req_fc_pump;
+
+      fc_pump->txn_id   =  gprs_read_bytes(buf, &idx, 4);
+      fc_pump->timeout  =  gprs_read_bytes(buf, &idx, 4);
+      fc_pump->reset    =  gprs_read_bytes(buf, &idx, 4);
+      fc_pump->max      =  gprs_read_bytes(buf, &idx, 4);
+
+      if (idx < size) {
+        fc_pump->function = gprs_read_byte(buf, &idx);
+      }
+
+      break;
+    }
+    case CMD_PARAM_TYPE_ANALOG_EXT:
+    {
+      cmd_req_analog_ext_t * analog_ext = &cmd->data.req_analog_ext;
+
+      analog_ext->analog  = gprs_read_byte(buf, &idx);
+      analog_ext->format  = gprs_read_byte(buf, &idx);
+      analog_ext->action  = gprs_read_byte(buf, &idx);
+
+      break;
+    }
+    case CMD_PARAM_TYPE_ANALOG_GET:
+      cmd->data.req_analog_get  = gprs_read_byte(buf, &idx);
+      break;
+    case CMD_PARAM_TYPE_INPUT_GET:
+      cmd->data.req_input_get   = gprs_read_byte(buf, &idx);
+      break;
+    case CMD_PARAM_TYPE_OUTPUT_GET:
+      cmd->data.req_output_get  = gprs_read_byte(buf, &idx);
+      break;
+    case CMD_PARAM_TYPE_OUTPUT_SET:
+    {
+      cmd_req_output_set_t * oset = &cmd->data.req_output_set;
+
+      oset->output  = gprs_read_byte(buf, &idx);
+      oset->mode    = gprs_read_byte(buf, &idx);
+
+      // Read rules (if any)
+      if (oset->mode == CMD_OUTPUT_MODE_OFF_RULE_AND || oset->mode == CMD_OUTPUT_MODE_ON_RULE_AND) {
+        oset->rule_count = gprs_read_byte(buf, &idx);
+
+        for (int i = 0; i < oset->rule_count; i++) {
+          output_set_rule_t * rule = &oset->rules[i];
+          rule->code  = gprs_read_byte(buf, &idx);
+          rule->cond  = gprs_read_byte(buf, &idx);
+          rule->value = gprs_read_bytes(buf, &idx, output_set_rule_size(rule->code));
+        }
+      }
+
+      break;
+    }
+    default:
+      // Unknown CONFIG_MSG code
+      break;
+    }
+    break;
+
   // Replies to CMD_PARAM_TYPE_SENDVAL
   case CMD_TYPE_SENDVAL_REPLY:
     switch (cmd->headers.code) {
     // Diag Reply
     case CMD_VAL_REMOTE_DIAG:
     {
-      cmd_diag_t * diag = &cmd->data.diag;
+      cmd_resp_diag_t * diag = &cmd->data.diag;
 
       // Version
       diag->version_major     = gprs_read_byte(buf, &idx);
@@ -53,7 +144,7 @@ void cmd_parse(uint8_t * buf, int size, cmd_t * cmd)
     case CMD_VAL_REMOTE_DIAG2:
     {
       uint8_t mask;
-      cmd_diag2_t * diag2 = &cmd->data.diag2;
+      cmd_resp_diag2_t * diag2 = &cmd->data.diag2;
 
       // Mask
       mask = gprs_read_byte(buf, &idx);
@@ -130,17 +221,84 @@ void cmd_parse(uint8_t * buf, int size, cmd_t * cmd)
 
 void cmd_print(cmd_t * cmd)
 {
+  printf("--- Command Start ---\n");
   printf("Type: %d, Ref: %d, Code: %d\n", cmd->headers.type,
                                           cmd->headers.ref,
                                           cmd->headers.code);
 
   switch (cmd->headers.type) {
+  // CMD_TYPE_CONFIG_MSG requests
+  case CMD_TYPE_CONFIG_MSG:
+    switch (cmd->headers.code) {
+    case CMD_PARAM_TYPE_POSITION:
+      printf("Position Request\n");
+      break;
+    case CMD_PARAM_TYPE_SENDVAL:
+      printf("Sendval Request: %d\n", cmd->data.sendval_request);
+      break;
+    case CMD_PARAM_TYPE_REQUEST_PARAM:
+      printf("Param Request: %d\n", cmd->data.param_request);
+      break;
+    case CMD_PARAM_TYPE_FC_PUMP:
+    {
+      cmd_req_fc_pump_t * fc_pump = &cmd->data.req_fc_pump;
+
+      printf("FC Pump Request\n");
+      printf("Transaction ID: %d\n",  fc_pump->txn_id);
+      printf("Timeout: %d\n",         fc_pump->timeout);
+      printf("Reset Ticks: %d\n",     fc_pump->reset);
+      printf("Max Ticks: %d\n",       fc_pump->max);
+      printf("Function: %d\n",        fc_pump->function);
+      break;
+    }
+    case CMD_PARAM_TYPE_ANALOG_EXT:
+    {
+      cmd_req_analog_ext_t * analog_ext = &cmd->data.req_analog_ext;
+
+      printf("Analog Ext Request: %d, %d, %d\n", analog_ext->analog,
+                                                 analog_ext->format,
+                                                 analog_ext->action);
+      break;
+    }
+    case CMD_PARAM_TYPE_ANALOG_GET:
+      printf("Analog Get Request: %d\n", cmd->data.req_analog_get);
+      break;
+    case CMD_PARAM_TYPE_INPUT_GET:
+      printf("Input Get Request: %d\n", cmd->data.req_input_get);
+      break;
+    case CMD_PARAM_TYPE_OUTPUT_GET:
+      printf("Output Get Request: %d\n", cmd->data.req_output_get);
+      break;
+    case CMD_PARAM_TYPE_OUTPUT_SET:
+    {
+      cmd_req_output_set_t * oset = &cmd->data.req_output_set;
+
+      printf("Output Set Request: %d,%d\n", oset->output, oset->mode);
+
+      if (oset->rule_count > 0) {
+        printf("Output Set Rules: %d\n", oset->rule_count);
+        for (int i = 0; i < oset->rule_count; i++) {
+          output_set_rule_t * rule = &oset->rules[i];
+          printf("Rule #%d: Code: %d, Cond: %d, Value: %d\n", i + 1,
+                                                              rule->code,
+                                                              rule->cond,
+                                                              rule->value);
+        }
+      }
+
+      break;
+    }
+    default:
+      break;
+    }
+    break;
+
   // Replies to CMD_PARAM_TYPE_SENDVAL
   case CMD_TYPE_SENDVAL_REPLY:
     switch (cmd->headers.code) {
     case CMD_VAL_REMOTE_DIAG:
     {
-      cmd_diag_t * diag = &cmd->data.diag;
+      cmd_resp_diag_t * diag = &cmd->data.diag;
       printf("Device Diag Response\n");
       printf("Firmware Version: v%d.%d.%d",     diag->version_major,
                                                 diag->version_minor,
@@ -154,7 +312,7 @@ void cmd_print(cmd_t * cmd)
     }
     case CMD_VAL_REMOTE_DIAG2:
     {
-      cmd_diag2_t * diag2 = &cmd->data.diag2;
+      cmd_resp_diag2_t * diag2 = &cmd->data.diag2;
       printf("Device Diag V2 Response\n");
       printf("Firmware Version: v%d.%d.%d",     diag2->version_major,
                                                 diag2->version_minor,
@@ -198,4 +356,6 @@ void cmd_print(cmd_t * cmd)
     // Unknown type
     break;
   }
+
+  printf("--- Command End ---\n");
 }

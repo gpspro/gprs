@@ -13,6 +13,8 @@
 
 void report_print(report_t report)
 {
+  printf("--- Report Start ---\n");
+
   printf("Ref: %d, Has Cell: %d, Has GPS: %d\n",                      report.ref,
                                                                       report.has_cell,
                                                                       report.has_gps);
@@ -95,6 +97,8 @@ void report_print(report_t report)
     }
     break;
   }
+
+  printf("--- Report End ---\n");
 }
 
 void report_lattos(double lat, uint32_t * secs, bool * south)
