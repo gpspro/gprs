@@ -4,6 +4,7 @@ meta:
   imports:
     - config_msg
     - sendval_reply
+    - param_reply
 seq:
   # Basic command params
   - id: ref
@@ -11,12 +12,10 @@ seq:
   - id: type
     type: b4
 
-  # Config Msg
   - id: type_class
-    type: config_msg
-    if: type == 4
-
-  # Sendval Reply
-  - id: type_class
-    type: sendval_reply
-    if: type == 6
+    type:
+      switch-on: type
+      cases:
+        4: config_msg       # Config Msg
+        6: sendval_reply    # Sendval Reply
+        8: param_reply      # Param Reply

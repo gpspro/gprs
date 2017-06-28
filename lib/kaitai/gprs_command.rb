@@ -13,15 +13,16 @@ class GprsCommand < Kaitai::Struct::Struct
     @ref = @_io.read_bits_int(4)
     @type = @_io.read_bits_int(4)
     @_io.align_to_byte
-    if type == 4
+    case type
+    when 4
       @type_class = ConfigMsg.new(@_io)
-    end
-    if type == 6
+    when 6
       @type_class = SendvalReply.new(@_io)
+    when 8
+      @type_class = ParamReply.new(@_io)
     end
   end
   attr_reader :ref
   attr_reader :type
-  attr_reader :type_class
   attr_reader :type_class
 end
