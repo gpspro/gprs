@@ -189,7 +189,7 @@ types:
 
   gsm_ip_port:
     seq:
-      - id: ip_bytes
+      - id: ip_address_bytes
         type: u1
         repeat: expr
         repeat-expr: 4
@@ -315,7 +315,7 @@ types:
 
   cdma_ip_port:
     seq:
-      - id: ip_bytes
+      - id: ip_address_bytes
         type: u1
         repeat: expr
         repeat-expr: 4

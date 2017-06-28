@@ -77,56 +77,56 @@ types:
       - id: temperature
         type: u1
         if: has_temperature
-      # Inputs Present
-      - id: inputs_present
-        type: b1
-        repeat: expr
-        repeat-expr: 4
-        if: has_io
       # Inputs Active
-      - id: inputs_active
+      - id: input_value_bits
         type: b1
         repeat: expr
         repeat-expr: 4
         if: has_io
-      # Outputs Present
-      - id: outputs_present
+      # Inputs Present
+      - id: input_presence_bits
         type: b1
         repeat: expr
         repeat-expr: 4
         if: has_io
       # Outputs Active
-      - id: outputs_active
+      - id: output_value_bits
         type: b1
         repeat: expr
         repeat-expr: 4
         if: has_io
-      - id: analogs_present
+      # Outputs Present
+      - id: output_presence_bits
+        type: b1
+        repeat: expr
+        repeat-expr: 4
+        if: has_io
+      - id: analogs_present_bits
         type: b1
         repeat: expr
         repeat-expr: 8
         if: has_analogs
       - id: analog_1
         type: u2
-        if: analogs_present[7]
+        if: analogs_present_bits[7]
       - id: analog_2
         type: u2
-        if: analogs_present[6]
+        if: analogs_present_bits[6]
       - id: analog_3
         type: u2
-        if: analogs_present[5]
+        if: analogs_present_bits[5]
       - id: analog_4
         type: u2
-        if: analogs_present[4]
+        if: analogs_present_bits[4]
       - id: analog_5
         type: u2
-        if: analogs_present[3]
+        if: analogs_present_bits[3]
       - id: analog_6
         type: u2
-        if: analogs_present[2]
+        if: analogs_present_bits[2]
       - id: analog_7
         type: u2
-        if: analogs_present[1]
+        if: analogs_present_bits[1]
       - id: analog_8
         type: u2
-        if: analogs_present[0]
+        if: analogs_present_bits[0]

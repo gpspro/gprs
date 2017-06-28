@@ -171,7 +171,7 @@ def parse_command_kaitai(log = true)
 
   command = GprsC.packet_parse_kaitai(commands[0])
   if log
-    puts command.inspect
+    puts command
     puts ""
   end
 end
@@ -185,7 +185,7 @@ def parse_commands_kaitai(log = true)
   commands.each do |packet|
     command = GprsC.packet_parse_kaitai(packet)
     if log
-      puts command.inspect
+      puts command
       puts ""
     end
   end

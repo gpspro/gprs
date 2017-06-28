@@ -389,14 +389,14 @@ class ParamReply < Kaitai::Struct::Struct
   class GsmIpPort < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @ip_bytes = Array.new(4)
+      @ip_address_bytes = Array.new(4)
       (4).times { |i|
-        @ip_bytes[i] = @_io.read_u1
+        @ip_address_bytes[i] = @_io.read_u1
       }
       @remote_port = @_io.read_u2le
       @local_port = @_io.read_u2le
     end
-    attr_reader :ip_bytes
+    attr_reader :ip_address_bytes
     attr_reader :remote_port
     attr_reader :local_port
   end
@@ -431,14 +431,14 @@ class ParamReply < Kaitai::Struct::Struct
   class CdmaIpPort < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @ip_bytes = Array.new(4)
+      @ip_address_bytes = Array.new(4)
       (4).times { |i|
-        @ip_bytes[i] = @_io.read_u1
+        @ip_address_bytes[i] = @_io.read_u1
       }
       @remote_port = @_io.read_u2le
       @local_port = @_io.read_u2le
     end
-    attr_reader :ip_bytes
+    attr_reader :ip_address_bytes
     attr_reader :remote_port
     attr_reader :local_port
   end

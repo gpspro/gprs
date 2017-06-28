@@ -69,58 +69,58 @@ class SendvalReply < Kaitai::Struct::Struct
         @temperature = @_io.read_u1
       end
       if has_io
-        @inputs_present = Array.new(4)
+        @input_value_bits = Array.new(4)
         (4).times { |i|
-          @inputs_present[i] = @_io.read_bits_int(1) != 0
+          @input_value_bits[i] = @_io.read_bits_int(1) != 0
         }
       end
       if has_io
-        @inputs_active = Array.new(4)
+        @input_presence_bits = Array.new(4)
         (4).times { |i|
-          @inputs_active[i] = @_io.read_bits_int(1) != 0
+          @input_presence_bits[i] = @_io.read_bits_int(1) != 0
         }
       end
       if has_io
-        @outputs_present = Array.new(4)
+        @output_value_bits = Array.new(4)
         (4).times { |i|
-          @outputs_present[i] = @_io.read_bits_int(1) != 0
+          @output_value_bits[i] = @_io.read_bits_int(1) != 0
         }
       end
       if has_io
-        @outputs_active = Array.new(4)
+        @output_presence_bits = Array.new(4)
         (4).times { |i|
-          @outputs_active[i] = @_io.read_bits_int(1) != 0
+          @output_presence_bits[i] = @_io.read_bits_int(1) != 0
         }
       end
       if has_analogs
-        @analogs_present = Array.new(8)
+        @analogs_present_bits = Array.new(8)
         (8).times { |i|
-          @analogs_present[i] = @_io.read_bits_int(1) != 0
+          @analogs_present_bits[i] = @_io.read_bits_int(1) != 0
         }
       end
       @_io.align_to_byte
-      if analogs_present[7]
+      if analogs_present_bits[7]
         @analog_1 = @_io.read_u2le
       end
-      if analogs_present[6]
+      if analogs_present_bits[6]
         @analog_2 = @_io.read_u2le
       end
-      if analogs_present[5]
+      if analogs_present_bits[5]
         @analog_3 = @_io.read_u2le
       end
-      if analogs_present[4]
+      if analogs_present_bits[4]
         @analog_4 = @_io.read_u2le
       end
-      if analogs_present[3]
+      if analogs_present_bits[3]
         @analog_5 = @_io.read_u2le
       end
-      if analogs_present[2]
+      if analogs_present_bits[2]
         @analog_6 = @_io.read_u2le
       end
-      if analogs_present[1]
+      if analogs_present_bits[1]
         @analog_7 = @_io.read_u2le
       end
-      if analogs_present[0]
+      if analogs_present_bits[0]
         @analog_8 = @_io.read_u2le
       end
     end
@@ -142,11 +142,11 @@ class SendvalReply < Kaitai::Struct::Struct
     attr_reader :int_voltage
     attr_reader :ext_voltage
     attr_reader :temperature
-    attr_reader :inputs_present
-    attr_reader :inputs_active
-    attr_reader :outputs_present
-    attr_reader :outputs_active
-    attr_reader :analogs_present
+    attr_reader :input_value_bits
+    attr_reader :input_presence_bits
+    attr_reader :output_value_bits
+    attr_reader :output_presence_bits
+    attr_reader :analogs_present_bits
     attr_reader :analog_1
     attr_reader :analog_2
     attr_reader :analog_3
