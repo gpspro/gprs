@@ -11,7 +11,7 @@ def parse_report_single(log = true)
     puts "# Parsing 1 report packet..."
   end
 
-  reports = GprsC.packet_parse(report_single, log)
+  reports = GprsC.packet_parse_c(report_single, log)
 
   if log
     puts reports
@@ -26,7 +26,7 @@ def parse_report_multiple(log = true)
   end
 
   report_multiple.each do |packet|
-    reports = GprsC.packet_parse(packet, log)
+    reports = GprsC.packet_parse_c(packet, log)
     if log
       puts reports
       puts ""
@@ -41,7 +41,7 @@ def parse_report_other(log = true)
   end
 
   report_other.each do |packet|
-    reports = Gprs.packet_parse(packet)
+    reports = Gprs.packet_parse_c(packet)
     if log
       puts reports
       puts ""
@@ -56,7 +56,7 @@ def detect_packet_types(log = true)
   end
 
   packet_types.each do |packet|
-    type = Gprs.packet_type(packet)
+    type = Gprs.packet_type_c(packet)
 
     if log
       puts "Packet: #{packet}"
@@ -72,7 +72,7 @@ def parse_commands(log = true)
   end
 
   commands.each do |packet|
-    command = Gprs.packet_parse(packet)
+    command = Gprs.packet_parse_c(packet)
     if log
       puts command
       puts ""
@@ -86,7 +86,7 @@ def parse_command_c(log = true)
     puts "# Parsing single command packet (C Extension)..."
   end
 
-  command = Gprs.packet_parse(commands[3])
+  command = Gprs.packet_parse_c(commands[3])
   if log
     puts command
     puts ""

@@ -4,7 +4,7 @@ require "rake/extensiontask"
 
 task :kaitai do
   puts "Generating Kaitai Struct Ruby classes from *.ksy files..."
-  sh "ksc -t ruby --outdir lib/kaitai ksy/gprs_command.ksy"
+  sh "ksc -t ruby --outdir lib/gprs_kaitai ksy/gprs_command.ksy"
 end
 
 Rake::TestTask.new(:test) do |t|
