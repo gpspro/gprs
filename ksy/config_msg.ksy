@@ -9,20 +9,20 @@ seq:
     type:
       switch-on: code
       cases:
-        20: sendval_request       # Sendval Request
-        31: param_request         # Param Request
-        80: fc_pump               # FC Pump Request
-        81: output_schedule_get   # Output Schedule Get Request
-        82: output_schedule_set   # Output Schedule Set Request
-        83: output_schedule_list  # Output Schedule List Request
-        87: analog_ext            # Analog Ext Request
-        88: analog_get            # Analog Get Request
-        89: input_get             # Input Get Request
-        90: output_get            # Output Get Request
-        91: output_set            # Output Set Request
-        100: sleep_timeout_set    # Sleep Timeout Set Request
-        101: led_status_set       # LED Status Set Request
-        130: unit_id_set          # Unit ID Set Request
+        20: sendval_request     # Sendval Request
+        31: param_request       # Param Request
+        80: fc_pump             # FC Pump Request
+        81: output_sch_get      # Output Schedule Get Request
+        82: output_sch_get      # Output Schedule Set Request
+        83: output_sch_list     # Output Schedule List Request
+        87: analog_ext          # Analog Ext Request
+        88: analog_get          # Analog Get Request
+        89: input_get           # Input Get Request
+        90: output_get          # Output Get Request
+        91: output_set          # Output Set Request
+        100: sleep_timeout_set  # Sleep Timeout Set Request
+        101: led_status_set     # LED Status Set Request
+        130: unit_id_set        # Unit ID Set Request
 
 enums:
   output_list_mode:
@@ -95,8 +95,10 @@ types:
         type: u4
       - id: max
         type: u4
+      - id: function
+        type: u1
 
-  output_schedule_get:
+  output_sch_get:
     seq:
       - id: output
         type: u1
@@ -107,7 +109,7 @@ types:
       - id: minute
         type: u1
 
-  output_schedule_set:
+  output_sch_set:
     seq:
       - id: output
         type: u1
@@ -120,7 +122,7 @@ types:
       - id: value
         type: u1
 
-  output_schedule_list:
+  output_sch_list:
     seq:
       - id: list_mode
         type: u1

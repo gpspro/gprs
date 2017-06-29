@@ -86,7 +86,7 @@ def parse_command_c(log = true)
     puts "# Parsing single command packet (C Extension)..."
   end
 
-  command = Gprs.packet_parse_c(commands[3])
+  command = Gprs.packet_parse_c(commands[0])
   if log
     puts command
     puts ""
@@ -99,7 +99,7 @@ def parse_command_kaitai(log = true)
     puts "# Parsing single command packet (Kaitai Struct)..."
   end
 
-  command = Gprs.packet_parse_kaitai(commands[3])
+  command = Gprs.packet_parse_kaitai(commands[0])
   if log
     puts command
     puts ""
@@ -113,9 +113,10 @@ def parse_commands_kaitai(log = true)
   end
 
   commands.each do |packet|
+    puts "Packet: #{packet}"
     command = Gprs.packet_parse_kaitai(packet)
     if log
-      puts command
+      puts "Command Hash: #{command}"
       puts ""
     end
   end

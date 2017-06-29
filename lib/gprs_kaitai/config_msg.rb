@@ -74,7 +74,7 @@ class ConfigMsg < Kaitai::Struct::Struct
     @code = @_io.read_u1
     case code
     when 81
-      @data = OutputScheduleGet.new(@_io, self, @_root)
+      @data = OutputSchGet.new(@_io, self, @_root)
     when 20
       @data = SendvalRequest.new(@_io, self, @_root)
     when 101
@@ -90,9 +90,9 @@ class ConfigMsg < Kaitai::Struct::Struct
     when 88
       @data = AnalogGet.new(@_io, self, @_root)
     when 82
-      @data = OutputScheduleSet.new(@_io, self, @_root)
+      @data = OutputSchGet.new(@_io, self, @_root)
     when 83
-      @data = OutputScheduleList.new(@_io, self, @_root)
+      @data = OutputSchList.new(@_io, self, @_root)
     when 130
       @data = UnitIdSet.new(@_io, self, @_root)
     when 80
@@ -110,20 +110,7 @@ class ConfigMsg < Kaitai::Struct::Struct
     end
     attr_reader :unit_id
   end
-  class OutputScheduleGet < Kaitai::Struct::Struct
-    def initialize(_io, _parent = nil, _root = self)
-      super(_io, _parent, _root)
-      @output = @_io.read_u1
-      @day = @_io.read_u1
-      @hour = @_io.read_u1
-      @minute = @_io.read_u1
-    end
-    attr_reader :output
-    attr_reader :day
-    attr_reader :hour
-    attr_reader :minute
-  end
-  class OutputScheduleSet < Kaitai::Struct::Struct
+  class OutputSchSet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
       @output = @_io.read_u1
@@ -145,11 +132,13 @@ class ConfigMsg < Kaitai::Struct::Struct
       @timeout = @_io.read_u4le
       @reset = @_io.read_u4le
       @max = @_io.read_u4le
+      @function = @_io.read_u1
     end
     attr_reader :txn_id
     attr_reader :timeout
     attr_reader :reset
     attr_reader :max
+    attr_reader :function
   end
   class AnalogGet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
@@ -157,13 +146,6 @@ class ConfigMsg < Kaitai::Struct::Struct
       @analog = @_io.read_u1
     end
     attr_reader :analog
-  end
-  class OutputScheduleList < Kaitai::Struct::Struct
-    def initialize(_io, _parent = nil, _root = self)
-      super(_io, _parent, _root)
-      @list_mode = Kaitai::Struct::Stream::resolve_enum(OUTPUT_LIST_MODE, @_io.read_u1)
-    end
-    attr_reader :list_mode
   end
   class OutputSetRule < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
@@ -251,12 +233,32 @@ class ConfigMsg < Kaitai::Struct::Struct
     end
     attr_reader :timeout
   end
+  class OutputSchGet < Kaitai::Struct::Struct
+    def initialize(_io, _parent = nil, _root = self)
+      super(_io, _parent, _root)
+      @output = @_io.read_u1
+      @day = @_io.read_u1
+      @hour = @_io.read_u1
+      @minute = @_io.read_u1
+    end
+    attr_reader :output
+    attr_reader :day
+    attr_reader :hour
+    attr_reader :minute
+  end
   class InputGet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
       @input = @_io.read_u1
     end
     attr_reader :input
+  end
+  class OutputSchList < Kaitai::Struct::Struct
+    def initialize(_io, _parent = nil, _root = self)
+      super(_io, _parent, _root)
+      @list_mode = Kaitai::Struct::Stream::resolve_enum(OUTPUT_LIST_MODE, @_io.read_u1)
+    end
+    attr_reader :list_mode
   end
   attr_reader :code
   attr_reader :data

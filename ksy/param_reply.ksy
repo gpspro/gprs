@@ -10,30 +10,30 @@ seq:
     type:
       switch-on: code
       cases:
-        1:  move_freq             # Move Frequency Reply
-        42: cell_info             # Cell Info Reply
-        67: send_freq             # Send Frequency Reply
-        68: stop_freq             # Stop Frequency Reply
-        70: turn_detect           # Turn Detection Enabled Reply
-        71: turn_angle            # Turn Angle Reply
-        72: modem_apn             # Modem APN Reply
-        73: gsm_ip_port           # GSM IP/Port Reply
-        80: fc_pump               # FC Pump Reply
-        81: output_schedule_get   # Output Schedule Get Reply
-        82: output_schedule_get   # Output Schedule Set Reply
-        83: output_schedule_list  # Output Schedule List Reply
-        84: output_schedule_clear # Output Schedule Clear Reply
-        87: analog_ext            # Analog Ext Reply
-        88: analog_get            # Analog Get Reply
-        89: input_get             # Input Get Reply
-        90: output_get            # Output Get Reply
-        91: output_set            # Output Set Reply
-        92: cdma_ip_port          # CDMA IP/Port Reply
-        93: cdma_activate         # CDMA Activate Reply
-        94: gsm_mode              # GSM Mode Reply
-        95: gsm_network           # GSM Network Reply
-        100: sleep_timeout_get    # Sleep Timeout Get Reply
-        101: led_status_get       # LED Status Get Reply
+        1:  move_freq           # Move Frequency Reply
+        42: cell_info           # Cell Info Reply
+        67: send_freq           # Send Frequency Reply
+        68: stop_freq           # Stop Frequency Reply
+        70: turn_detect         # Turn Detection Enabled Reply
+        71: turn_angle          # Turn Angle Reply
+        72: modem_apn           # Modem APN Reply
+        73: gsm_ip_port         # GSM IP/Port Reply
+        80: fc_pump             # FC Pump Reply
+        81: output_sch_get      # Output Schedule Get Reply
+        82: output_sch_get      # Output Schedule Set Reply
+        83: output_sch_list     # Output Schedule List Reply
+        84: output_sch_clear    # Output Schedule Clear Reply
+        87: analog_ext          # Analog Ext Reply
+        88: analog_get          # Analog Get Reply
+        89: input_get           # Input Get Reply
+        90: output_get          # Output Get Reply
+        91: output_set          # Output Set Reply
+        92: cdma_ip_port        # CDMA IP/Port Reply
+        93: cdma_activate       # CDMA Activate Reply
+        94: gsm_mode            # GSM Mode Reply
+        95: gsm_network         # GSM Network Reply
+        100: sleep_timeout_get  # Sleep Timeout Get Reply
+        101: led_status_get     # LED Status Get Reply
 enums:
   fc_pump_rc:
     0: success
@@ -43,7 +43,7 @@ enums:
     4: interface_busy
     5: not_available
 
-  output_schedule_rc:
+  output_sch_rc:
     0: success
     1: not_found
     2: schedule_full
@@ -204,32 +204,32 @@ types:
         type: u1
         enum: fc_pump_rc
 
-  output_schedule_get:
+  output_sch_get:
     seq:
       - id: return_code
         type: u1
-        enum: output_schedule_rc
+        enum: output_sch_rc
       - id: value
         type: u1
 
-  output_schedule_set:
+  output_sch_set:
     seq:
       - id: return_code
         type: u1
-        enum: output_schedule_rc
+        enum: output_sch_rc
 
-  output_schedule_list:
+  output_sch_list:
     seq:
       - id: has_more
         type: b1
       - id: count
         type: b7
       - id: items
-        type: output_schedule_item
+        type: output_sch_item
         repeat: expr
         repeat-expr: count
 
-  output_schedule_item:
+  output_sch_item:
     seq:
       - id: output
         type: u1
@@ -242,7 +242,7 @@ types:
       - id: value
         type: u1
 
-  output_schedule_clear:
+  output_sch_clear:
     seq:
       - id: count
         type: u1

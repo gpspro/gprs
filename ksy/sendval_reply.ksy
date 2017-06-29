@@ -61,10 +61,10 @@ types:
       - id: modem_signal
         type: u1
       # GPS
-      - id: gps_fix
-        type: b2
       - id: gps_satellites
         type: b6
+      - id: gps_fix
+        type: b2
       # Int Voltage
       - id: int_voltage
         type: u2
@@ -78,55 +78,34 @@ types:
         type: u1
         if: has_temperature
       # Inputs Active
-      - id: input_value_bits
+      - id: input_value
         type: b1
         repeat: expr
         repeat-expr: 4
         if: has_io
       # Inputs Present
-      - id: input_presence_bits
+      - id: input_present
         type: b1
         repeat: expr
         repeat-expr: 4
         if: has_io
       # Outputs Active
-      - id: output_value_bits
+      - id: output_value
         type: b1
         repeat: expr
         repeat-expr: 4
         if: has_io
       # Outputs Present
-      - id: output_presence_bits
+      - id: output_present
         type: b1
         repeat: expr
         repeat-expr: 4
         if: has_io
-      - id: analogs_present_bits
+      - id: analog_present
         type: b1
         repeat: expr
         repeat-expr: 8
         if: has_analogs
-      - id: analog_1
+      - id: analog_value
         type: u2
-        if: analogs_present_bits[7]
-      - id: analog_2
-        type: u2
-        if: analogs_present_bits[6]
-      - id: analog_3
-        type: u2
-        if: analogs_present_bits[5]
-      - id: analog_4
-        type: u2
-        if: analogs_present_bits[4]
-      - id: analog_5
-        type: u2
-        if: analogs_present_bits[3]
-      - id: analog_6
-        type: u2
-        if: analogs_present_bits[2]
-      - id: analog_7
-        type: u2
-        if: analogs_present_bits[1]
-      - id: analog_8
-        type: u2
-        if: analogs_present_bits[0]
+        repeat: eos

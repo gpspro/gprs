@@ -3,83 +3,142 @@
 require "require_all"
 require_all "lib/gprs_kaitai"
 
+class String
+  def underscore
+    self.gsub(/::/, '/').
+    gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+    gsub(/([a-z\d])([A-Z])/,'\1_\2').
+    tr("-", "_").
+    downcase
+  end
+end
+
 module GprsKaitai
 
-  def self.packet_parse(packet, log = false)
+  # NOTE: In this method you will see lots of arrays being reversed.
+  #       This is because Kaitai reads bits from MSB to LSB. However,
+  #       I wrote the protocol to order things from LSB to MSB, so I
+  #       have to reverse all bits every time.
+  def self.command_to_hash(cmd)
+    hash = { :ref => cmd.ref, :type => cmd.type, :code => cmd.type_class.code }
+    data_hash = {}
 
-    type = GprsC.packet_type_c(packet, log)
+    data  = cmd.type_class.data
 
-    hash = {}
+    data_class_name = data.class.name.split("::").last.underscore
 
-    if type == 2
-      # Process with GPRS c extension
-      processed = GprsC.packet_process_c(packet, log).pack("c*")
+    # Fields that we want to manually turn into hashes
+    case data
+    when ParamReply::GsmIpPort
+      data_hash = {
+        :ip_address   => data.ip_address_bytes.join("."),
+        :remote_port  => data.remote_port,
+        :local_port   => data.local_port
+      }
+    when ParamReply::CdmaIpPort    
+      data_hash = {
+        :ip_address   => data.ip_address_bytes.join("."),
+        :remote_port  => data.remote_port,
+        :local_port   => data.local_port
+      }
+    when SendvalReply::Diag
+      diag = data
+      data_hash = {
+        :firmware_version => "v#{diag.version_major}.#{diag.version_minor}.#{diag.version_revision}",
+        :modem_status     => diag.modem_status,
+        :modem_signal     => diag.modem_signal,
+        :gps_status       => diag.gps_status,
+        :int_voltage      => '%.2fV' % (diag.int_voltage / 100.0),
+        :ext_voltage      => '%.2fV' % (diag.ext_voltage / 100.0)
+      }
 
-      # Parse with Kaitai Struct
-      cmd = GprsCommand.new(Kaitai::Struct::Stream.new(processed))
+    when SendvalReply::Diag2
+      diag2 = data
 
-      # Generate hash from cmd
-      hash[:ref] = cmd.ref
-      hash[:type] = cmd.type
-      if cmd.respond_to? :type_class
-        type_class = cmd.type_class
+      data_hash = {
+        :firmware_version => "v#{diag2.version_major}.#{diag2.version_minor}.#{diag2.version_revision}",
+        :modem_status     => diag2.modem_status,
+        :modem_signal     => diag2.modem_signal,
+        :gps_fix          => diag2.gps_fix,
+        :gps_satellites   => diag2.gps_satellites,
+      }
 
-        hash[:code] = type_class.code
+      if diag2.has_int_voltage
+        data_hash[:int_voltage] = '%.2fV' % (diag2.int_voltage / 100.0)
+      end
+      if diag2.has_ext_voltage
+        data_hash[:ext_voltage] = '%.2fV' % (diag2.ext_voltage / 100.0)
+      end
+      if diag2.has_temperature
+        data_hash[:temperature] = '%dF' % diag2.temperature
+      end
+      if diag2.has_io
+        # Get input states
+        idx = 0
+        input_present = diag2.input_present.reverse
+        input_value   = diag2.input_value.reverse
+        input_present.each do |present|
+          if present
+            data_hash["input_#{idx + 1}".to_sym] = input_value[idx] ? 1 : 0
+          end
+          idx += 1
+        end
 
-        if (type_class.respond_to? :data) and not type_class.data.nil?
-          data = type_class.data
+        # Get output states
+        idx = 0
+        output_present = diag2.output_present.reverse
+        output_value   = diag2.output_value.reverse
+        output_present.each do |present|
+          if present
+            data_hash["output_#{idx + 1}".to_sym] = output_value[idx] ? 1 : 0
+          end
+          idx += 1
+        end
+      end
 
-          data_hash = {}
-          data.instance_variables.each do |field|
-            key = field.to_s.gsub('@', '')
-            val = data.instance_variable_get field
+      if diag2.has_analogs
+        # Get analog states
+        idx = 0
+        analog_present = diag2.analog_present.reverse
+        analog_value   = diag2.analog_value
+        analog_present.each do |present|
+          if present
+            data_hash["analog_#{idx + 1}".to_sym] = '%.2fV' % (analog_value[idx] / 100.0)
+          end
+          idx += 1
+        end
+      end
+    # We want to auto generate everything else
+    else
+      if not data.nil?
+        data.instance_variables.each do |field|
+          key = field.to_s.gsub("@", "")
+          value = data.instance_variable_get field
 
-            # Recognize _presence_bits and build key + value
-            if key.include? "_presence_bits"
-              type_name = key.gsub("_presence_bits", "")
-              value_name = type_name + "_value_bits"
-
-              # Kaitai reads bits backwards so we reverse arrays
-              presence_bits = val.reverse
-              value_bits = data.instance_variable_get("@#{value_name}").reverse
-
-              # Add new keys + values if present
-              idx = 0
-              presence_bits.each do |present|
-                if present
-                  # Build key name from type and index
-                  key_name = "#{type_name}_#{(idx + 1).to_s}"
-
-                  # Add to data hash
-                  data_hash[key_name.to_sym] = value_bits[idx]
-                end
-                idx += 1
-              end
-            end
-
-            # Skip the following:
-            # - Keys starting with "_"
-            # - Keys starting with "has_"
-            # - Keys ending in "_count" or "_size"
-            if key.index("_") == 0 or key.index("has_") == 0 or key.include? "_bits"
-              next
-            end
-
-            # Convert ip_address_bytes to IP address string
-            if key.include? "ip_address_bytes"
-              key = "ip_address"
-              val = val.join(".")
-            end
-
-            data_hash[key.to_sym] = val
-
+          if key.index("_") == 0
+            next
           end
 
-          hash[:data] = data_hash
+          data_hash[key.to_sym] = value
         end
       end
     end
 
+    if data_hash.size > 0
+      hash[:data] = {
+        data_class_name.to_sym => data_hash
+      }
+    end
     hash
+  end
+
+  def self.packet_parse(packet, log = false)
+
+    # Process with GPRS c extension
+    processed = GprsC.packet_process_c(packet, log).pack("c*")
+
+    # Parse with Kaitai Struct
+    cmd = GprsCommand.new(Kaitai::Struct::Stream.new(processed))
+    command_to_hash(cmd)
   end
 end

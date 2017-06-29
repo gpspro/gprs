@@ -75,22 +75,22 @@ class ParamReply < Kaitai::Struct::Struct
   }
   I__OUTPUT_GET_RC = OUTPUT_GET_RC.invert
 
+  OUTPUT_SCH_RC = {
+    0 => :output_sch_rc_success,
+    1 => :output_sch_rc_not_found,
+    2 => :output_sch_rc_schedule_full,
+    3 => :output_sch_rc_invalid_output,
+    4 => :output_sch_rc_invalid_day,
+    5 => :output_sch_rc_invalid_time,
+    6 => :output_sch_rc_invalid_value,
+  }
+  I__OUTPUT_SCH_RC = OUTPUT_SCH_RC.invert
+
   CDMA_ACTIVATION_RC = {
     0 => :cdma_activation_rc_failed,
     1 => :cdma_activation_rc_success,
   }
   I__CDMA_ACTIVATION_RC = CDMA_ACTIVATION_RC.invert
-
-  OUTPUT_SCHEDULE_RC = {
-    0 => :output_schedule_rc_success,
-    1 => :output_schedule_rc_not_found,
-    2 => :output_schedule_rc_schedule_full,
-    3 => :output_schedule_rc_invalid_output,
-    4 => :output_schedule_rc_invalid_day,
-    5 => :output_schedule_rc_invalid_time,
-    6 => :output_schedule_rc_invalid_value,
-  }
-  I__OUTPUT_SCHEDULE_RC = OUTPUT_SCHEDULE_RC.invert
 
   ANALOG_EXT_RC = {
     0 => :analog_ext_rc_success,
@@ -152,7 +152,7 @@ class ParamReply < Kaitai::Struct::Struct
     when 42
       @data = CellInfo.new(@_io, self, @_root)
     when 81
-      @data = OutputScheduleGet.new(@_io, self, @_root)
+      @data = OutputSchGet.new(@_io, self, @_root)
     when 1
       @data = MoveFreq.new(@_io, self, @_root)
     when 101
@@ -172,11 +172,11 @@ class ParamReply < Kaitai::Struct::Struct
     when 88
       @data = AnalogGet.new(@_io, self, @_root)
     when 82
-      @data = OutputScheduleGet.new(@_io, self, @_root)
+      @data = OutputSchGet.new(@_io, self, @_root)
     when 84
-      @data = OutputScheduleClear.new(@_io, self, @_root)
+      @data = OutputSchClear.new(@_io, self, @_root)
     when 83
-      @data = OutputScheduleList.new(@_io, self, @_root)
+      @data = OutputSchList.new(@_io, self, @_root)
     when 94
       @data = GsmMode.new(@_io, self, @_root)
     when 72
@@ -195,6 +195,13 @@ class ParamReply < Kaitai::Struct::Struct
       @data = OutputGet.new(@_io, self, @_root)
     end
   end
+  class OutputSchClear < Kaitai::Struct::Struct
+    def initialize(_io, _parent = nil, _root = self)
+      super(_io, _parent, _root)
+      @count = @_io.read_u1
+    end
+    attr_reader :count
+  end
   class MoveFreq < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
@@ -202,36 +209,12 @@ class ParamReply < Kaitai::Struct::Struct
     end
     attr_reader :seconds
   end
-  class OutputScheduleGet < Kaitai::Struct::Struct
+  class OutputSchSet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @return_code = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SCHEDULE_RC, @_io.read_u1)
-      @value = @_io.read_u1
+      @return_code = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SCH_RC, @_io.read_u1)
     end
     attr_reader :return_code
-    attr_reader :value
-  end
-  class OutputScheduleSet < Kaitai::Struct::Struct
-    def initialize(_io, _parent = nil, _root = self)
-      super(_io, _parent, _root)
-      @return_code = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SCHEDULE_RC, @_io.read_u1)
-    end
-    attr_reader :return_code
-  end
-  class OutputScheduleItem < Kaitai::Struct::Struct
-    def initialize(_io, _parent = nil, _root = self)
-      super(_io, _parent, _root)
-      @output = @_io.read_u1
-      @day = @_io.read_u1
-      @hour = @_io.read_u1
-      @minute = @_io.read_u1
-      @value = @_io.read_u1
-    end
-    attr_reader :output
-    attr_reader :day
-    attr_reader :hour
-    attr_reader :minute
-    attr_reader :value
   end
   class FcPump < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
@@ -284,21 +267,6 @@ class ParamReply < Kaitai::Struct::Struct
     attr_reader :user
     attr_reader :pass_len
     attr_reader :pass
-  end
-  class OutputScheduleList < Kaitai::Struct::Struct
-    def initialize(_io, _parent = nil, _root = self)
-      super(_io, _parent, _root)
-      @has_more = @_io.read_bits_int(1) != 0
-      @count = @_io.read_bits_int(7)
-      @_io.align_to_byte
-      @items = Array.new(count)
-      (count).times { |i|
-        @items[i] = OutputScheduleItem.new(@_io, self, @_root)
-      }
-    end
-    attr_reader :has_more
-    attr_reader :count
-    attr_reader :items
   end
   class OutputSet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
@@ -386,6 +354,15 @@ class ParamReply < Kaitai::Struct::Struct
     attr_reader :cond
     attr_reader :value
   end
+  class OutputSchGet < Kaitai::Struct::Struct
+    def initialize(_io, _parent = nil, _root = self)
+      super(_io, _parent, _root)
+      @return_code = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SCH_RC, @_io.read_u1)
+      @value = @_io.read_u1
+    end
+    attr_reader :return_code
+    attr_reader :value
+  end
   class GsmIpPort < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
@@ -400,13 +377,6 @@ class ParamReply < Kaitai::Struct::Struct
     attr_reader :remote_port
     attr_reader :local_port
   end
-  class OutputScheduleClear < Kaitai::Struct::Struct
-    def initialize(_io, _parent = nil, _root = self)
-      super(_io, _parent, _root)
-      @count = @_io.read_u1
-    end
-    attr_reader :count
-  end
   class InputGet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
@@ -420,6 +390,21 @@ class ParamReply < Kaitai::Struct::Struct
       @seconds = @_io.read_u2le
     end
     attr_reader :seconds
+  end
+  class OutputSchList < Kaitai::Struct::Struct
+    def initialize(_io, _parent = nil, _root = self)
+      super(_io, _parent, _root)
+      @has_more = @_io.read_bits_int(1) != 0
+      @count = @_io.read_bits_int(7)
+      @_io.align_to_byte
+      @items = Array.new(count)
+      (count).times { |i|
+        @items[i] = OutputSchItem.new(@_io, self, @_root)
+      }
+    end
+    attr_reader :has_more
+    attr_reader :count
+    attr_reader :items
   end
   class CellInfo < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
@@ -448,6 +433,21 @@ class ParamReply < Kaitai::Struct::Struct
       @status = Kaitai::Struct::Stream::resolve_enum(LED_STATUS, @_io.read_u1)
     end
     attr_reader :status
+  end
+  class OutputSchItem < Kaitai::Struct::Struct
+    def initialize(_io, _parent = nil, _root = self)
+      super(_io, _parent, _root)
+      @output = @_io.read_u1
+      @day = @_io.read_u1
+      @hour = @_io.read_u1
+      @minute = @_io.read_u1
+      @value = @_io.read_u1
+    end
+    attr_reader :output
+    attr_reader :day
+    attr_reader :hour
+    attr_reader :minute
+    attr_reader :value
   end
   attr_reader :code
   attr_reader :data
