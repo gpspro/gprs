@@ -15,6 +15,29 @@ end
 
 module GprsKaitai
 
+  def self.object_hashify_name(object)
+    object.class.name.split("::").last.underscore.to_sym
+  end
+
+  def self.object_to_hash(object)
+    hash = {}
+
+    if not object.nil?
+      object.instance_variables.each do |field|
+        key   = field.to_s.gsub("@", "")
+        value = object.instance_variable_get field
+
+        if key.index("_") == 0
+          next
+        end
+
+        hash[key.to_sym] = value
+      end
+    end
+
+    hash
+  end
+
   # NOTE: In this method you will see lots of arrays being reversed.
   #       This is because Kaitai reads bits from MSB to LSB. However,
   #       I wrote the protocol to order things from LSB to MSB, so I
@@ -25,17 +48,34 @@ module GprsKaitai
 
     data  = cmd.type_class.data
 
-    data_class_name = data.class.name.split("::").last.underscore
+    data_class_name = object_hashify_name(data)
 
     # Fields that we want to manually turn into hashes
     case data
+    when ConfigMsg::OutputSet
+      data_hash = {
+        :output     => data.output,
+        :mode       => data.mode
+      }
+
+      if data.rule_count > 0
+        data_hash[:rule_count] = data.rule_count
+        data_hash[:rules] = []
+        data.rules.each do |rule|
+          data_hash[:rules] << {
+            :code   => rule.code,
+            :cond   => rule.cond,
+            :value  => rule.value
+          }
+        end
+      end
     when ParamReply::GsmIpPort
       data_hash = {
         :ip_address   => data.ip_address_bytes.join("."),
         :remote_port  => data.remote_port,
         :local_port   => data.local_port
       }
-    when ParamReply::CdmaIpPort    
+    when ParamReply::CdmaIpPort
       data_hash = {
         :ip_address   => data.ip_address_bytes.join("."),
         :remote_port  => data.remote_port,
@@ -110,23 +150,12 @@ module GprsKaitai
       end
     # We want to auto generate everything else
     else
-      if not data.nil?
-        data.instance_variables.each do |field|
-          key = field.to_s.gsub("@", "")
-          value = data.instance_variable_get field
-
-          if key.index("_") == 0
-            next
-          end
-
-          data_hash[key.to_sym] = value
-        end
-      end
+      data_hash = object_to_hash(data)
     end
 
     if data_hash.size > 0
       hash[:data] = {
-        data_class_name.to_sym => data_hash
+        data_class_name => data_hash
       }
     end
     hash

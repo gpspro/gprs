@@ -90,7 +90,7 @@ class ConfigMsg < Kaitai::Struct::Struct
     when 88
       @data = AnalogGet.new(@_io, self, @_root)
     when 82
-      @data = OutputSchGet.new(@_io, self, @_root)
+      @data = OutputSchSet.new(@_io, self, @_root)
     when 83
       @data = OutputSchList.new(@_io, self, @_root)
     when 130

@@ -116,7 +116,7 @@ def parse_commands_kaitai(log = true)
     puts "Packet: #{packet}"
     command = Gprs.packet_parse_kaitai(packet)
     if log
-      puts "Command Hash: #{command}"
+      puts "Hash: #{command}"
       puts ""
     end
   end

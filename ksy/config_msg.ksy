@@ -13,7 +13,7 @@ seq:
         31: param_request       # Param Request
         80: fc_pump             # FC Pump Request
         81: output_sch_get      # Output Schedule Get Request
-        82: output_sch_get      # Output Schedule Set Request
+        82: output_sch_set      # Output Schedule Set Request
         83: output_sch_list     # Output Schedule List Request
         87: analog_ext          # Analog Ext Request
         88: analog_get          # Analog Get Request
