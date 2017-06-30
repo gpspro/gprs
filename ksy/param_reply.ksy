@@ -200,13 +200,13 @@ types:
 
   fc_pump:
     seq:
-      - id: return_code
+      - id: rc
         type: u1
         enum: fc_pump_rc
 
   output_sch_get:
     seq:
-      - id: return_code
+      - id: rc
         type: u1
         enum: output_sch_rc
       - id: value
@@ -214,7 +214,7 @@ types:
 
   output_sch_set:
     seq:
-      - id: return_code
+      - id: rc
         type: u1
         enum: output_sch_rc
 
@@ -249,7 +249,7 @@ types:
 
   analog_ext:
     seq:
-      - id: return_code
+      - id: rc
         type: u1
         enum: analog_ext_rc
       - id: analog
@@ -268,19 +268,19 @@ types:
 
   input_get:
     seq:
-      - id: return_code
+      - id: rc
         type: u1
         enum: input_get_rc
 
   output_get:
     seq:
-      - id: return_code
+      - id: rc
         type: u1
         enum: output_get_rc
 
   output_set:
     seq:
-      - id: return_code
+      - id: rc
         type: u1
         enum: output_set_rc
       - id: error_count
@@ -326,7 +326,7 @@ types:
 
   cdma_activate:
     seq:
-      - id: return_code
+      - id: rc
         type: u1
         enum: cdma_activation_rc
 

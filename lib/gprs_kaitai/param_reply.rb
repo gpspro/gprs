@@ -212,16 +212,16 @@ class ParamReply < Kaitai::Struct::Struct
   class OutputSchSet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @return_code = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SCH_RC, @_io.read_u1)
+      @rc = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SCH_RC, @_io.read_u1)
     end
-    attr_reader :return_code
+    attr_reader :rc
   end
   class FcPump < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @return_code = Kaitai::Struct::Stream::resolve_enum(FC_PUMP_RC, @_io.read_u1)
+      @rc = Kaitai::Struct::Stream::resolve_enum(FC_PUMP_RC, @_io.read_u1)
     end
-    attr_reader :return_code
+    attr_reader :rc
   end
   class GsmNetwork < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
@@ -306,12 +306,12 @@ class ParamReply < Kaitai::Struct::Struct
   class AnalogExt < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @return_code = Kaitai::Struct::Stream::resolve_enum(ANALOG_EXT_RC, @_io.read_u1)
+      @rc = Kaitai::Struct::Stream::resolve_enum(ANALOG_EXT_RC, @_io.read_u1)
       @analog = @_io.read_u1
       @format = Kaitai::Struct::Stream::resolve_enum(ANALOG_EXT_FORMAT, @_io.read_u1)
       @action = Kaitai::Struct::Stream::resolve_enum(ANALOG_EXT_ACTION, @_io.read_u1)
     end
-    attr_reader :return_code
+    attr_reader :rc
     attr_reader :analog
     attr_reader :format
     attr_reader :action
@@ -326,9 +326,9 @@ class ParamReply < Kaitai::Struct::Struct
   class OutputGet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @return_code = Kaitai::Struct::Stream::resolve_enum(OUTPUT_GET_RC, @_io.read_u1)
+      @rc = Kaitai::Struct::Stream::resolve_enum(OUTPUT_GET_RC, @_io.read_u1)
     end
-    attr_reader :return_code
+    attr_reader :rc
   end
   class OutputRuleError < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
@@ -357,10 +357,10 @@ class ParamReply < Kaitai::Struct::Struct
   class OutputSchGet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @return_code = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SCH_RC, @_io.read_u1)
+      @rc = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SCH_RC, @_io.read_u1)
       @value = @_io.read_u1
     end
-    attr_reader :return_code
+    attr_reader :rc
     attr_reader :value
   end
   class GsmIpPort < Kaitai::Struct::Struct
@@ -380,9 +380,9 @@ class ParamReply < Kaitai::Struct::Struct
   class InputGet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @return_code = Kaitai::Struct::Stream::resolve_enum(INPUT_GET_RC, @_io.read_u1)
+      @rc = Kaitai::Struct::Stream::resolve_enum(INPUT_GET_RC, @_io.read_u1)
     end
-    attr_reader :return_code
+    attr_reader :rc
   end
   class SendFreq < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
