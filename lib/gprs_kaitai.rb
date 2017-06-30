@@ -75,6 +75,55 @@ module GprsKaitai
         :remote_port  => data.remote_port,
         :local_port   => data.local_port
       }
+    when ParamReply::OutputSchList
+      data_hash = {
+        :has_more     => data.has_more,
+        :count        => data.count
+      }
+      if data.count > 0
+        data_hash[:items] = []
+        data.items.each do |item|
+          data_hash[:items] << {
+            :output => item.output,
+            :day    => item.day,
+            :minute => item.minute,
+            :value  => item.value
+          }
+        end
+      end
+    when ParamReply::AnalogExt
+      data_hash = {
+        :rc       => data.rc,
+        :analog   => data.analog,
+        :format   => data.format,
+        :action   => data.action,
+        :value    => data.value,
+        :min      => data.min,
+        :max      => data.max
+      }
+
+      if data.format == :analog_ext_format_voltage
+        data_hash[:value] = '%.02fV' % data.value
+        data_hash[:min]   = '%.02fV' % data.min
+        data_hash[:max]   = '%.02fV' % data.max
+      end
+    when ParamReply::OutputSet
+      data_hash = {
+        :rc     => data.rc
+      }
+
+      if not data.error_count.nil?
+        data_hash[:error_count] = data.error_count
+        data_hash[:errors] = []
+        data.errors.each do |error|
+          data_hash[:errors] << {
+            :error => error.error,
+            :code  => error.code,
+            :cond  => error.cond,
+            :value => error.value
+          }
+        end
+      end
     when ParamReply::CdmaIpPort
       data_hash = {
         :ip_address   => data.ip_address_bytes.join("."),

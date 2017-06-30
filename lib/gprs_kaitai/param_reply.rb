@@ -11,14 +11,18 @@ class ParamReply < Kaitai::Struct::Struct
 
   OUTPUT_SET_RC = {
     0 => :output_set_rc_success,
-    1 => :output_set_rc_error,
-    2 => :output_set_rc_unchanged,
+    1 => :output_set_rc_invalid_output,
+    2 => :output_set_rc_invalid_mode,
+    3 => :output_set_rc_unchanged,
+    4 => :output_set_rc_rule_success,
+    5 => :output_set_rc_rule_error,
+    6 => :output_set_rc_rule_unchanged,
   }
   I__OUTPUT_SET_RC = OUTPUT_SET_RC.invert
 
   INPUT_GET_RC = {
-    0 => :input_get_rc_false,
-    1 => :input_get_rc_true,
+    0 => :input_get_rc_disabled,
+    1 => :input_get_rc_enabled,
     255 => :input_get_rc_invalid_input,
   }
   I__INPUT_GET_RC = INPUT_GET_RC.invert
@@ -69,8 +73,8 @@ class ParamReply < Kaitai::Struct::Struct
   I__LED_STATUS = LED_STATUS.invert
 
   OUTPUT_GET_RC = {
-    0 => :output_get_rc_false,
-    1 => :output_get_rc_true,
+    0 => :output_get_rc_disabled,
+    1 => :output_get_rc_enabled,
     255 => :output_get_rc_invalid_output,
   }
   I__OUTPUT_GET_RC = OUTPUT_GET_RC.invert
@@ -172,7 +176,7 @@ class ParamReply < Kaitai::Struct::Struct
     when 88
       @data = AnalogGet.new(@_io, self, @_root)
     when 82
-      @data = OutputSchGet.new(@_io, self, @_root)
+      @data = OutputSchSet.new(@_io, self, @_root)
     when 84
       @data = OutputSchClear.new(@_io, self, @_root)
     when 83
@@ -271,14 +275,18 @@ class ParamReply < Kaitai::Struct::Struct
   class OutputSet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @return_code = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SET_RC, @_io.read_u1)
-      @error_count = @_io.read_u1
-      @errors = Array.new(error_count)
-      (error_count).times { |i|
-        @errors[i] = OutputRuleError.new(@_io, self, @_root)
-      }
+      @rc = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SET_RC, @_io.read_u1)
+      if rc == :output_set_rc_rule_error
+        @error_count = @_io.read_u1
+      end
+      if rc == :output_set_rc_rule_error
+        @errors = Array.new(error_count)
+        (error_count).times { |i|
+          @errors[i] = OutputRuleError.new(@_io, self, @_root)
+        }
+      end
     end
-    attr_reader :return_code
+    attr_reader :rc
     attr_reader :error_count
     attr_reader :errors
   end
@@ -310,18 +318,45 @@ class ParamReply < Kaitai::Struct::Struct
       @analog = @_io.read_u1
       @format = Kaitai::Struct::Stream::resolve_enum(ANALOG_EXT_FORMAT, @_io.read_u1)
       @action = Kaitai::Struct::Stream::resolve_enum(ANALOG_EXT_ACTION, @_io.read_u1)
+      case format
+      when :analog_ext_format_io
+        @value = @_io.read_u2le
+      when :analog_ext_format_level
+        @value = @_io.read_u1
+      when :analog_ext_format_voltage
+        @value = @_io.read_u2le
+      end
+      case format
+      when :analog_ext_format_io
+        @min = @_io.read_u2le
+      when :analog_ext_format_level
+        @min = @_io.read_u1
+      when :analog_ext_format_voltage
+        @min = @_io.read_u2le
+      end
+      case format
+      when :analog_ext_format_io
+        @max = @_io.read_u2le
+      when :analog_ext_format_level
+        @max = @_io.read_u1
+      when :analog_ext_format_voltage
+        @max = @_io.read_u2le
+      end
     end
     attr_reader :rc
     attr_reader :analog
     attr_reader :format
     attr_reader :action
+    attr_reader :value
+    attr_reader :min
+    attr_reader :max
   end
   class CdmaActivate < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @return_code = Kaitai::Struct::Stream::resolve_enum(CDMA_ACTIVATION_RC, @_io.read_u1)
+      @rc = Kaitai::Struct::Stream::resolve_enum(CDMA_ACTIVATION_RC, @_io.read_u1)
     end
-    attr_reader :return_code
+    attr_reader :rc
   end
   class OutputGet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)

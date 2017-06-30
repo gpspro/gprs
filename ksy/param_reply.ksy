@@ -20,7 +20,7 @@ seq:
         73: gsm_ip_port         # GSM IP/Port Reply
         80: fc_pump             # FC Pump Reply
         81: output_sch_get      # Output Schedule Get Reply
-        82: output_sch_get      # Output Schedule Set Reply
+        82: output_sch_set      # Output Schedule Set Reply
         83: output_sch_list     # Output Schedule List Reply
         84: output_sch_clear    # Output Schedule Clear Reply
         87: analog_ext          # Analog Ext Reply
@@ -68,19 +68,24 @@ enums:
     1: clear
 
   input_get_rc:
-    0: off
-    1: on
+    0: disabled
+    1: enabled
     255: invalid_input
 
   output_get_rc:
-    0: off
-    1: on
+    0: disabled
+    1: enabled
     255: invalid_output
 
   output_set_rc:
     0: success
-    1: error
-    2: unchanged
+    1: invalid_output
+    2: invalid_mode
+    3: unchanged
+    4: rule_success
+    5: rule_error
+    6: rule_unchanged
+
 
   output_rule_error:
     0: success
@@ -260,6 +265,27 @@ types:
       - id: action
         type: u1
         enum: analog_ext_action
+      - id: value
+        type:
+          switch-on: format
+          cases:
+            analog_ext_format::io:      u2
+            analog_ext_format::level:   u1
+            analog_ext_format::voltage: u2
+      - id: min
+        type:
+          switch-on: format
+          cases:
+            analog_ext_format::io:      u2
+            analog_ext_format::level:   u1
+            analog_ext_format::voltage: u2
+      - id: max
+        type:
+          switch-on: format
+          cases:
+            analog_ext_format::io:      u2
+            analog_ext_format::level:   u1
+            analog_ext_format::voltage: u2
 
   analog_get:
     seq:
@@ -285,10 +311,12 @@ types:
         enum: output_set_rc
       - id: error_count
         type: u1
+        if: rc == output_set_rc::rule_error
       - id: errors
         type: output_rule_error
         repeat: expr
         repeat-expr: error_count
+        if: rc == output_set_rc::rule_error
 
   output_rule_error:
     seq:
