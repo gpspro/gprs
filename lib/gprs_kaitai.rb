@@ -218,7 +218,7 @@ module GprsKaitai
     hash
   end
 
-  def self.packet_parse(packet, log = false)
+  def self.parse_command(packet, log = false)
 
     # Process with GPRS c extension
     processed = GprsC.packet_process_c(packet, log).pack("c*")

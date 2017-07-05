@@ -12,19 +12,19 @@ class GprsTest < Minitest::Test
   end
 
   # Parse a report and print to console
-  def test_1_parse_report_single_c
+  def test_1_parse_report_single
     parse_report_single(true)
   end
 
-  def test_2_parse_report_multiple_c
+  def test_2_parse_report_multiple
     parse_report_multiple(true)
   end
 
-  def test_3_parse_report_other_c
+  def test_3_parse_report_other
     parse_report_other(true)
   end
 
-  def test_4_parse_report_bench_c
+  def test_4_parse_report_bench
     puts ""
     puts "# Benchmarking report parsing performance (C extension):"
 
@@ -62,37 +62,7 @@ class GprsTest < Minitest::Test
     parse_commands(true)
   end
 
-  def test_7_parse_commands_kaitai
-    parse_commands_kaitai(true)
-  end
-
-  def test_8_parse_command_bench_c
-    puts ""
-    puts "# Benchmarking command parsing performance (C Extension):"
-
-    Benchmark.bm(40) do |x|
-
-      x.report("5000 packets (1 command 5000 times)") do
-        for i in 0..5000
-          parse_command_c(false)
-        end
-      end
-
-      x.report("10000 packets (1 command 10000 times)") do
-        for i in 0..10000
-          parse_command_c(false)
-        end
-      end
-
-      x.report("100000 packets (1 command 100000 times)") do
-        for i in 0..100000
-          parse_command_c(false)
-        end
-      end
-    end
-  end
-
-  def test_9_parse_command_bench_kaitai
+  def test_7_parse_command_bench
     puts ""
     puts "# Benchmarking command parsing performance (Kaitai Struct):"
 
@@ -100,19 +70,19 @@ class GprsTest < Minitest::Test
 
       x.report("5000 packets (1 command 5000 times)") do
         for i in 0..5000
-          parse_command_kaitai(false)
+          parse_command(false)
         end
       end
 
       x.report("10000 packets (1 command 10000 times)") do
         for i in 0..10000
-          parse_command_kaitai(false)
+          parse_command(false)
         end
       end
 
       x.report("100000 packets (1 command 100000 times)") do
         for i in 0..100000
-          parse_command_kaitai(false)
+          parse_command(false)
         end
       end
     end

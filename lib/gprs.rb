@@ -14,22 +14,22 @@ module Gprs
     end
   end
 
-  def self.packet_type_c(packet, log = false)
+  def self.packet_type(packet, log = false)
     packet = process_packet(packet)
 
     GprsC.packet_type_c(packet, log)
   end
 
-  def self.packet_parse_c(packet, log = false)
+  def self.parse_report(packet, log = false)
     packet = process_packet(packet)
 
-    GprsC.packet_parse_c(packet, log)
+    GprsC.parse_report_c(packet, log)
   end
 
-  def self.packet_parse_kaitai(packet, log = false)
+  def self.parse_command(packet, log = false)
     # Convert to readable format
     packet = process_packet(packet)
 
-    GprsKaitai.packet_parse(packet, log)
+    GprsKaitai.parse_command(packet, log)
   end
 end

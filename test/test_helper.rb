@@ -11,7 +11,7 @@ def parse_report_single(log = true)
     puts "# Parsing 1 report packet..."
   end
 
-  reports = GprsC.packet_parse_c(report_single, log)
+  reports = Gprs.parse_report(report_single, log)
 
   if log
     puts reports
@@ -26,7 +26,7 @@ def parse_report_multiple(log = true)
   end
 
   report_multiple.each do |packet|
-    reports = GprsC.packet_parse_c(packet, log)
+    reports = Gprs.parse_report(packet, log)
     if log
       puts reports
       puts ""
@@ -41,7 +41,7 @@ def parse_report_other(log = true)
   end
 
   report_other.each do |packet|
-    reports = Gprs.packet_parse_c(packet)
+    reports = Gprs.parse_report(packet)
     if log
       puts reports
       puts ""
@@ -56,7 +56,7 @@ def detect_packet_types(log = true)
   end
 
   packet_types.each do |packet|
-    type = Gprs.packet_type_c(packet)
+    type = Gprs.parse_report(packet)
 
     if log
       puts "Packet: #{packet}"
@@ -65,48 +65,20 @@ def detect_packet_types(log = true)
   end
 end
 
-def parse_commands(log = true)
-  if log
-    puts ""
-    puts "# Parsing all command packets (C Extension)..."
-  end
-
-  commands.each do |packet|
-    command = Gprs.packet_parse_c(packet)
-    if log
-      puts command
-      puts ""
-    end
-  end
-end
-
-def parse_command_c(log = true)
-  if log
-    puts ""
-    puts "# Parsing single command packet (C Extension)..."
-  end
-
-  command = Gprs.packet_parse_c(command_single)
-  if log
-    puts command
-    puts ""
-  end
-end
-
-def parse_command_kaitai(log = true)
+def parse_command(log = true)
   if log
     puts ""
     puts "# Parsing single command packet (Kaitai Struct)..."
   end
 
-  command = Gprs.packet_parse_kaitai(command_single)
+  command = Gprs.parse_command(command_single)
   if log
     puts command
     puts ""
   end
 end
 
-def parse_commands_kaitai(log = true)
+def parse_commands(log = true)
   if log
     puts ""
     puts "# Parsing all command packet types (Kaitai Struct)..."
@@ -114,7 +86,7 @@ def parse_commands_kaitai(log = true)
 
   commands.each do |packet|
     puts "Packet: #{packet}"
-    command = Gprs.packet_parse_kaitai(packet)
+    command = Gprs.parse_command(packet)
     if log
       puts "Hash: #{command}"
       puts ""
