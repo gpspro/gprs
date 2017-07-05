@@ -3,6 +3,7 @@ meta:
   endian: le
   imports:
     - config_msg
+    - program
     - sendval_reply
     - param_reply
 seq:
@@ -17,5 +18,6 @@ seq:
       switch-on: type
       cases:
         4: config_msg       # Config Msg
+        5: program          # Program Packet
         6: sendval_reply    # Sendval Reply
         8: param_reply      # Param Reply

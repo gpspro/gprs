@@ -3,6 +3,7 @@
 require "gprs_kaitai/config_msg.rb"
 require "gprs_kaitai/gprs_command.rb"
 require "gprs_kaitai/param_reply.rb"
+require "gprs_kaitai/program.rb"
 require "gprs_kaitai/sendval_reply.rb"
 
 class String
@@ -76,6 +77,24 @@ module GprsKaitai
             :value  => rule.value
           }
         end
+      end
+    when Array
+      case data.first
+      when Program::FirmwareVersion
+        data = data.first
+        data_class_name = object_hashify_name(data)
+        data_hash = {
+          :version => "v#{data.version_major}.#{data.version_minor}.#{data.version_revision}"
+        }
+      when Program::FirmwareInfo
+        data = data.first
+        data_class_name = object_hashify_name(data)
+        data_hash = {
+          :device_id => data.device_id,
+          :firmware_id => data.firmware_id,
+          :version => "v#{data.version_major}.#{data.version_minor}.#{data.version_revision}",
+          :reset_cause => data.reset_cause
+        }
       end
     when ParamReply::GsmIpPort
       data_hash = {

@@ -16,6 +16,8 @@ class GprsCommand < Kaitai::Struct::Struct
     case type
     when 4
       @type_class = ConfigMsg.new(@_io)
+    when 5
+      @type_class = Program.new(@_io)
     when 6
       @type_class = SendvalReply.new(@_io)
     when 8
