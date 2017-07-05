@@ -1,7 +1,9 @@
 
 # Kaitai files
-require "require_all"
-require_all "lib/gprs_kaitai"
+require "gprs_kaitai/config_msg.rb"
+require "gprs_kaitai/gprs_command.rb"
+require "gprs_kaitai/param_reply.rb"
+require "gprs_kaitai/sendval_reply.rb"
 
 class String
   def underscore
