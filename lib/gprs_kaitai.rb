@@ -45,11 +45,17 @@ module GprsKaitai
   #       I wrote the protocol to order things from LSB to MSB, so I
   #       have to reverse all bits every time.
   def self.command_to_hash(cmd)
-    hash = { :ref => cmd.ref, :type => cmd.type, :code => cmd.type_class.code }
-    data_hash = {}
+    hash = { :ref => cmd.ref, :type => cmd.type }
 
-    data  = cmd.type_class.data
+    # If we don't have type_class it means the packet type is unknown
+    if not cmd.type_class.nil?
+      hash[:code] = cmd.type_class.code
+    else
+      return hash
+    end
 
+    data_hash       = {}
+    data            = cmd.type_class.data
     data_class_name = object_hashify_name(data)
 
     # Fields that we want to manually turn into hashes
