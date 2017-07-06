@@ -80,6 +80,13 @@ module GprsKaitai
       end
     when Array
       case data.first
+      when Program::ProgramData
+        data = data.first
+        data_class_name = object_hashify_name(data)
+        data_hash = {
+          :length       => data.length,
+          :binary_data  => data.binary_data
+        }
       when Program::FirmwareVersion
         data = data.first
         data_class_name = object_hashify_name(data)

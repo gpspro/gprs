@@ -19,6 +19,10 @@ types:
     seq:
       - id: length
         type: u2
+      - id: binary_data
+        type: u1
+        repeat: expr
+        repeat-expr: length
   firmware_version:
     seq:
       - id: version_major

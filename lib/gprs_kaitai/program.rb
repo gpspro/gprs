@@ -27,8 +27,13 @@ class Program < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
       @length = @_io.read_u2le
+      @binary_data = Array.new(length)
+      (length).times { |i|
+        @binary_data[i] = @_io.read_u1
+      }
     end
     attr_reader :length
+    attr_reader :binary_data
   end
   class FirmwareVersion < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
