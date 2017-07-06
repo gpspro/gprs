@@ -246,11 +246,22 @@ module GprsKaitai
 
   def self.parse_command(packet, log = false)
 
-    # Process with GPRS c extension
-    processed = GprsC.packet_process_c(packet, log).pack("c*")
+    hash = {}
 
-    # Parse with Kaitai Struct
-    cmd = GprsCommand.new(Kaitai::Struct::Stream.new(processed))
-    command_to_hash(cmd)
+    type = GprsC.packet_type_c(packet, log)
+    if type == 2
+      # Process with GPRS C extension (until we have a Ruby stream processor)
+      processed = GprsC.packet_process_c(packet, log).pack("c*")
+
+      # Parse with Kaitai Struct
+      cmd = GprsCommand.new(Kaitai::Struct::Stream.new(processed))
+      hash = command_to_hash(cmd)
+    else
+      if log
+        puts "Don't know how to parse packet of type #{type}"
+      end
+    end
+
+    hash
   end
 end
