@@ -249,7 +249,9 @@ module GprsKaitai
     hash = {}
 
     type = GprsC.packet_type_c(packet, log)
-    if type == 2
+
+    # Command or Program (a special kind of command) can be parsed
+    if type == 2 or type == 4
       # Process with GPRS C extension (until we have a Ruby stream processor)
       processed = GprsC.packet_process_c(packet, log).pack("c*")
 
