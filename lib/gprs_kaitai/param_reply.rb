@@ -8,143 +8,6 @@ unless Gem::Version.new(Kaitai::Struct::VERSION) >= Gem::Version.new('0.7')
 end
 
 class ParamReply < Kaitai::Struct::Struct
-
-  OUTPUT_SET_RC = {
-    0 => :output_set_rc_success,
-    1 => :output_set_rc_invalid_output,
-    2 => :output_set_rc_invalid_mode,
-    3 => :output_set_rc_unchanged,
-    4 => :output_set_rc_rule_success,
-    5 => :output_set_rc_rule_error,
-    6 => :output_set_rc_rule_unchanged,
-  }
-  I__OUTPUT_SET_RC = OUTPUT_SET_RC.invert
-
-  INPUT_GET_RC = {
-    0 => :input_get_rc_disabled,
-    1 => :input_get_rc_enabled,
-    255 => :input_get_rc_invalid_input,
-  }
-  I__INPUT_GET_RC = INPUT_GET_RC.invert
-
-  FC_PUMP_RC = {
-    0 => :fc_pump_rc_success,
-    1 => :fc_pump_rc_access_error,
-    2 => :fc_pump_rc_duplicate_txn,
-    3 => :fc_pump_rc_not_authorized,
-    4 => :fc_pump_rc_interface_busy,
-    5 => :fc_pump_rc_not_available,
-  }
-  I__FC_PUMP_RC = FC_PUMP_RC.invert
-
-  GSM_NETWORK = {
-    0 => :gsm_network_unknown,
-    1 => :gsm_network_att,
-    2 => :gsm_network_verizon,
-  }
-  I__GSM_NETWORK = GSM_NETWORK.invert
-
-  OUTPUT_RULE_CODE = {
-    0 => :output_rule_code_none,
-    1 => :output_rule_code_gps_speed,
-    2 => :output_rule_code_acc_movement,
-    3 => :output_rule_code_acc_orient,
-    4 => :output_rule_code_int_voltage,
-    6 => :output_rule_code_ext_voltage,
-    10 => :output_rule_code_input_1,
-    11 => :output_rule_code_input_2,
-    12 => :output_rule_code_input_3,
-    13 => :output_rule_code_input_4,
-    14 => :output_rule_code_output_1,
-    15 => :output_rule_code_output_2,
-    16 => :output_rule_code_output_3,
-    17 => :output_rule_code_output_4,
-    18 => :output_rule_code_analog_1_level,
-    19 => :output_rule_code_analog_2_level,
-    20 => :output_rule_code_analog_1_voltage,
-    21 => :output_rule_code_analog_2_voltage,
-  }
-  I__OUTPUT_RULE_CODE = OUTPUT_RULE_CODE.invert
-
-  LED_STATUS = {
-    0 => :led_status_hidden,
-    1 => :led_status_visible,
-  }
-  I__LED_STATUS = LED_STATUS.invert
-
-  OUTPUT_GET_RC = {
-    0 => :output_get_rc_disabled,
-    1 => :output_get_rc_enabled,
-    255 => :output_get_rc_invalid_output,
-  }
-  I__OUTPUT_GET_RC = OUTPUT_GET_RC.invert
-
-  OUTPUT_SCH_RC = {
-    0 => :output_sch_rc_success,
-    1 => :output_sch_rc_not_found,
-    2 => :output_sch_rc_schedule_full,
-    3 => :output_sch_rc_invalid_output,
-    4 => :output_sch_rc_invalid_day,
-    5 => :output_sch_rc_invalid_time,
-    6 => :output_sch_rc_invalid_value,
-  }
-  I__OUTPUT_SCH_RC = OUTPUT_SCH_RC.invert
-
-  CDMA_ACTIVATION_RC = {
-    0 => :cdma_activation_rc_failed,
-    1 => :cdma_activation_rc_success,
-  }
-  I__CDMA_ACTIVATION_RC = CDMA_ACTIVATION_RC.invert
-
-  ANALOG_EXT_RC = {
-    0 => :analog_ext_rc_success,
-    1 => :analog_ext_rc_invalid_analog,
-    2 => :analog_ext_rc_invalid_format,
-    3 => :analog_ext_rc_invalid_action,
-  }
-  I__ANALOG_EXT_RC = ANALOG_EXT_RC.invert
-
-  GSM_MODE = {
-    0 => :gsm_mode_multimode,
-    1 => :gsm_mode_gsm_umts,
-    2 => :gsm_mode_cdma2000,
-  }
-  I__GSM_MODE = GSM_MODE.invert
-
-  OUTPUT_RULE_ERROR = {
-    0 => :output_rule_error_success,
-    1 => :output_rule_error_cond_not_met,
-    2 => :output_rule_error_invalid_code,
-    3 => :output_rule_error_invalid_cond,
-    4 => :output_rule_error_invalid_value,
-    5 => :output_rule_error_cond_no_support,
-  }
-  I__OUTPUT_RULE_ERROR = OUTPUT_RULE_ERROR.invert
-
-  OUTPUT_RULE_COND = {
-    0 => :output_rule_cond_eq,
-    1 => :output_rule_cond_noteq,
-    2 => :output_rule_cond_lt,
-    3 => :output_rule_cond_gt,
-    4 => :output_rule_cond_lteq,
-    5 => :output_rule_cond_gteq,
-    6 => :output_rule_cond_min,
-    7 => :output_rule_cond_max,
-  }
-  I__OUTPUT_RULE_COND = OUTPUT_RULE_COND.invert
-
-  ANALOG_EXT_FORMAT = {
-    0 => :analog_ext_format_io,
-    1 => :analog_ext_format_level,
-    2 => :analog_ext_format_voltage,
-  }
-  I__ANALOG_EXT_FORMAT = ANALOG_EXT_FORMAT.invert
-
-  ANALOG_EXT_ACTION = {
-    0 => :analog_ext_action_get,
-    1 => :analog_ext_action_clear,
-  }
-  I__ANALOG_EXT_ACTION = ANALOG_EXT_ACTION.invert
   def initialize(_io, _parent = nil, _root = self)
     super(_io, _parent, _root)
     @code = @_io.read_u1
@@ -216,21 +79,21 @@ class ParamReply < Kaitai::Struct::Struct
   class OutputSchSet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @rc = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SCH_RC, @_io.read_u1)
+      @rc = @_io.read_u1
     end
     attr_reader :rc
   end
   class FcPump < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @rc = Kaitai::Struct::Stream::resolve_enum(FC_PUMP_RC, @_io.read_u1)
+      @rc = @_io.read_u1
     end
     attr_reader :rc
   end
   class GsmNetwork < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @network = Kaitai::Struct::Stream::resolve_enum(GSM_NETWORK, @_io.read_u1)
+      @network = @_io.read_u1
     end
     attr_reader :network
   end
@@ -275,11 +138,11 @@ class ParamReply < Kaitai::Struct::Struct
   class OutputSet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @rc = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SET_RC, @_io.read_u1)
-      if rc == :output_set_rc_rule_error
+      @rc = @_io.read_u1
+      if rc == 5
         @error_count = @_io.read_u1
       end
-      if rc == :output_set_rc_rule_error
+      if rc == 5
         @errors = Array.new(error_count)
         (error_count).times { |i|
           @errors[i] = OutputRuleError.new(@_io, self, @_root)
@@ -300,7 +163,7 @@ class ParamReply < Kaitai::Struct::Struct
   class GsmMode < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @mode = Kaitai::Struct::Stream::resolve_enum(GSM_MODE, @_io.read_u1)
+      @mode = @_io.read_u1
     end
     attr_reader :mode
   end
@@ -314,32 +177,32 @@ class ParamReply < Kaitai::Struct::Struct
   class AnalogExt < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @rc = Kaitai::Struct::Stream::resolve_enum(ANALOG_EXT_RC, @_io.read_u1)
+      @rc = @_io.read_u1
       @analog = @_io.read_u1
-      @format = Kaitai::Struct::Stream::resolve_enum(ANALOG_EXT_FORMAT, @_io.read_u1)
-      @action = Kaitai::Struct::Stream::resolve_enum(ANALOG_EXT_ACTION, @_io.read_u1)
+      @format = @_io.read_u1
+      @action = @_io.read_u1
       case format
-      when :analog_ext_format_io
+      when 0
         @value = @_io.read_u2le
-      when :analog_ext_format_level
+      when 1
         @value = @_io.read_u1
-      when :analog_ext_format_voltage
+      when 2
         @value = @_io.read_u2le
       end
       case format
-      when :analog_ext_format_io
+      when 0
         @min = @_io.read_u2le
-      when :analog_ext_format_level
+      when 1
         @min = @_io.read_u1
-      when :analog_ext_format_voltage
+      when 2
         @min = @_io.read_u2le
       end
       case format
-      when :analog_ext_format_io
+      when 0
         @max = @_io.read_u2le
-      when :analog_ext_format_level
+      when 1
         @max = @_io.read_u1
-      when :analog_ext_format_voltage
+      when 2
         @max = @_io.read_u2le
       end
     end
@@ -354,31 +217,31 @@ class ParamReply < Kaitai::Struct::Struct
   class CdmaActivate < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @rc = Kaitai::Struct::Stream::resolve_enum(CDMA_ACTIVATION_RC, @_io.read_u1)
+      @rc = @_io.read_u1
     end
     attr_reader :rc
   end
   class OutputGet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @rc = Kaitai::Struct::Stream::resolve_enum(OUTPUT_GET_RC, @_io.read_u1)
+      @rc = @_io.read_u1
     end
     attr_reader :rc
   end
   class OutputRuleError < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @error = Kaitai::Struct::Stream::resolve_enum(OUTPUT_RULE_ERROR, @_io.read_u1)
-      @code = Kaitai::Struct::Stream::resolve_enum(OUTPUT_RULE_CODE, @_io.read_u1)
-      @cond = Kaitai::Struct::Stream::resolve_enum(OUTPUT_RULE_COND, @_io.read_u1)
+      @error = @_io.read_u1
+      @code = @_io.read_u1
+      @cond = @_io.read_u1
       case code
-      when :output_rule_code_analog_1_voltage
+      when 4
         @value = @_io.read_u2le
-      when :output_rule_code_int_voltage
+      when 6
         @value = @_io.read_u2le
-      when :output_rule_code_analog_2_voltage
+      when 20
         @value = @_io.read_u2le
-      when :output_rule_code_ext_voltage
+      when 21
         @value = @_io.read_u2le
       else
         @value = @_io.read_u1
@@ -392,7 +255,7 @@ class ParamReply < Kaitai::Struct::Struct
   class OutputSchGet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @rc = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SCH_RC, @_io.read_u1)
+      @rc = @_io.read_u1
       @value = @_io.read_u1
     end
     attr_reader :rc
@@ -415,7 +278,7 @@ class ParamReply < Kaitai::Struct::Struct
   class InputGet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @rc = Kaitai::Struct::Stream::resolve_enum(INPUT_GET_RC, @_io.read_u1)
+      @rc = @_io.read_u1
     end
     attr_reader :rc
   end
@@ -465,7 +328,7 @@ class ParamReply < Kaitai::Struct::Struct
   class LedStatusGet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @status = Kaitai::Struct::Stream::resolve_enum(LED_STATUS, @_io.read_u1)
+      @status = @_io.read_u1
     end
     attr_reader :status
   end

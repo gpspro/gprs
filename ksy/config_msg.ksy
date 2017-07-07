@@ -24,56 +24,6 @@ seq:
         101: led_status_set     # LED Status Set Request
         130: unit_id_set        # Unit ID Set Request
 
-enums:
-  output_list_mode:
-    0: first
-    1: next
-
-  analog_ext_format:
-    0: io
-    1: level
-    2: voltage
-
-  analog_ext_action:
-    0: get
-    1: clear
-
-  output_set_mode:
-    0: turn_off
-    1: turn_on
-    2: turn_off_and
-    3: turn_on_and
-
-  output_rule_code:
-    0: none
-    1: gps_speed
-    2: acc_movement
-    3: acc_orient
-    4: int_voltage
-    6: ext_voltage
-    10: input_1
-    11: input_2
-    12: input_3
-    13: input_4
-    14: output_1
-    15: output_2
-    16: output_3
-    17: output_4
-    18: analog_1_level
-    19: analog_2_level
-    20: analog_1_voltage
-    21: analog_2_voltage
-
-  output_rule_cond:
-    0: eq
-    1: noteq
-    2: lt
-    3: gt
-    4: lteq
-    5: gteq
-    6: min
-    7: max
-
 types:
   sendval_request:
     seq:
@@ -126,7 +76,6 @@ types:
     seq:
       - id: list_mode
         type: u1
-        enum: output_list_mode
 
   analog_ext:
     seq:
@@ -134,10 +83,8 @@ types:
         type: u1
       - id: format
         type: u1
-        enum: analog_ext_format
       - id: action
         type: u1
-        enum: analog_ext_action
 
   analog_get:
     seq:
@@ -160,35 +107,32 @@ types:
         type: u1
       - id: mode
         type: u1
-        enum: output_set_mode
       - id: rule_count
         type: u1
-        if: mode == output_set_mode::turn_off_and or mode == output_set_mode::turn_on_and
+        if: mode == 3 or mode == 4
       - id: rules
         type: output_set_rule
         repeat: expr
         repeat-expr: rule_count
-        if: mode == output_set_mode::turn_off_and or mode == output_set_mode::turn_on_and
+        if: mode == 3 or mode == 4
 
   output_set_rule:
     seq:
       - id: code
         type: u1
-        enum: output_rule_code
       - id: cond
         type: u1
-        enum: output_rule_cond
       - id: value
         type:
           switch-on: code
           cases:
             # Some codes need 2 byte values
-            output_rule_code::int_voltage:       u2
-            output_rule_code::ext_voltage:       u2
-            output_rule_code::analog_1_voltage:  u2
-            output_rule_code::analog_2_voltage:  u2
+            4:  u2    # Int Voltage
+            6:  u2    # Ext Voltage
+            20: u2    # Analog 1 Voltage
+            21: u2    # Analog 2 Voltage
             # Everything else is 1 byte
-            _:                            u1
+            _: u1
 
   sleep_timeout_set:
     seq:

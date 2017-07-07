@@ -8,67 +8,6 @@ unless Gem::Version.new(Kaitai::Struct::VERSION) >= Gem::Version.new('0.7')
 end
 
 class ConfigMsg < Kaitai::Struct::Struct
-
-  OUTPUT_RULE_CODE = {
-    0 => :output_rule_code_none,
-    1 => :output_rule_code_gps_speed,
-    2 => :output_rule_code_acc_movement,
-    3 => :output_rule_code_acc_orient,
-    4 => :output_rule_code_int_voltage,
-    6 => :output_rule_code_ext_voltage,
-    10 => :output_rule_code_input_1,
-    11 => :output_rule_code_input_2,
-    12 => :output_rule_code_input_3,
-    13 => :output_rule_code_input_4,
-    14 => :output_rule_code_output_1,
-    15 => :output_rule_code_output_2,
-    16 => :output_rule_code_output_3,
-    17 => :output_rule_code_output_4,
-    18 => :output_rule_code_analog_1_level,
-    19 => :output_rule_code_analog_2_level,
-    20 => :output_rule_code_analog_1_voltage,
-    21 => :output_rule_code_analog_2_voltage,
-  }
-  I__OUTPUT_RULE_CODE = OUTPUT_RULE_CODE.invert
-
-  OUTPUT_SET_MODE = {
-    0 => :output_set_mode_turn_off,
-    1 => :output_set_mode_turn_on,
-    2 => :output_set_mode_turn_off_and,
-    3 => :output_set_mode_turn_on_and,
-  }
-  I__OUTPUT_SET_MODE = OUTPUT_SET_MODE.invert
-
-  OUTPUT_LIST_MODE = {
-    0 => :output_list_mode_first,
-    1 => :output_list_mode_next,
-  }
-  I__OUTPUT_LIST_MODE = OUTPUT_LIST_MODE.invert
-
-  OUTPUT_RULE_COND = {
-    0 => :output_rule_cond_eq,
-    1 => :output_rule_cond_noteq,
-    2 => :output_rule_cond_lt,
-    3 => :output_rule_cond_gt,
-    4 => :output_rule_cond_lteq,
-    5 => :output_rule_cond_gteq,
-    6 => :output_rule_cond_min,
-    7 => :output_rule_cond_max,
-  }
-  I__OUTPUT_RULE_COND = OUTPUT_RULE_COND.invert
-
-  ANALOG_EXT_FORMAT = {
-    0 => :analog_ext_format_io,
-    1 => :analog_ext_format_level,
-    2 => :analog_ext_format_voltage,
-  }
-  I__ANALOG_EXT_FORMAT = ANALOG_EXT_FORMAT.invert
-
-  ANALOG_EXT_ACTION = {
-    0 => :analog_ext_action_get,
-    1 => :analog_ext_action_clear,
-  }
-  I__ANALOG_EXT_ACTION = ANALOG_EXT_ACTION.invert
   def initialize(_io, _parent = nil, _root = self)
     super(_io, _parent, _root)
     @code = @_io.read_u1
@@ -150,16 +89,16 @@ class ConfigMsg < Kaitai::Struct::Struct
   class OutputSetRule < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @code = Kaitai::Struct::Stream::resolve_enum(OUTPUT_RULE_CODE, @_io.read_u1)
-      @cond = Kaitai::Struct::Stream::resolve_enum(OUTPUT_RULE_COND, @_io.read_u1)
+      @code = @_io.read_u1
+      @cond = @_io.read_u1
       case code
-      when :output_rule_code_analog_1_voltage
+      when 4
         @value = @_io.read_u2le
-      when :output_rule_code_int_voltage
+      when 6
         @value = @_io.read_u2le
-      when :output_rule_code_analog_2_voltage
+      when 20
         @value = @_io.read_u2le
-      when :output_rule_code_ext_voltage
+      when 21
         @value = @_io.read_u2le
       else
         @value = @_io.read_u1
@@ -173,11 +112,11 @@ class ConfigMsg < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
       @output = @_io.read_u1
-      @mode = Kaitai::Struct::Stream::resolve_enum(OUTPUT_SET_MODE, @_io.read_u1)
-      if  ((mode == :output_set_mode_turn_off_and) || (mode == :output_set_mode_turn_on_and)) 
+      @mode = @_io.read_u1
+      if  ((mode == 3) || (mode == 4)) 
         @rule_count = @_io.read_u1
       end
-      if  ((mode == :output_set_mode_turn_off_and) || (mode == :output_set_mode_turn_on_and)) 
+      if  ((mode == 3) || (mode == 4)) 
         @rules = Array.new(rule_count)
         (rule_count).times { |i|
           @rules[i] = OutputSetRule.new(@_io, self, @_root)
@@ -207,8 +146,8 @@ class ConfigMsg < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
       @analog = @_io.read_u1
-      @format = Kaitai::Struct::Stream::resolve_enum(ANALOG_EXT_FORMAT, @_io.read_u1)
-      @action = Kaitai::Struct::Stream::resolve_enum(ANALOG_EXT_ACTION, @_io.read_u1)
+      @format = @_io.read_u1
+      @action = @_io.read_u1
     end
     attr_reader :analog
     attr_reader :format
@@ -258,7 +197,7 @@ class ConfigMsg < Kaitai::Struct::Struct
   class OutputSchList < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @list_mode = Kaitai::Struct::Stream::resolve_enum(OUTPUT_LIST_MODE, @_io.read_u1)
+      @list_mode = @_io.read_u1
     end
     attr_reader :list_mode
   end
