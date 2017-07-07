@@ -67,7 +67,7 @@ module GprsKaitai
         :mode       => data.mode
       }
 
-      if data.rule_count > 0
+      if not data.rule_count.nil? and data.rule_count > 0
         data_hash[:rule_count] = data.rule_count
         data_hash[:rules] = []
         data.rules.each do |rule|

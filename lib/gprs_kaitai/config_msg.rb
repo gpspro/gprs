@@ -177,10 +177,12 @@ class ConfigMsg < Kaitai::Struct::Struct
       if  ((mode == :output_set_mode_turn_off_and) || (mode == :output_set_mode_turn_on_and)) 
         @rule_count = @_io.read_u1
       end
-      @rules = Array.new(rule_count)
-      (rule_count).times { |i|
-        @rules[i] = OutputSetRule.new(@_io, self, @_root)
-      }
+      if  ((mode == :output_set_mode_turn_off_and) || (mode == :output_set_mode_turn_on_and)) 
+        @rules = Array.new(rule_count)
+        (rule_count).times { |i|
+          @rules[i] = OutputSetRule.new(@_io, self, @_root)
+        }
+      end
     end
     attr_reader :output
     attr_reader :mode

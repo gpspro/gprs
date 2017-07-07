@@ -168,6 +168,7 @@ types:
         type: output_set_rule
         repeat: expr
         repeat-expr: rule_count
+        if: mode == output_set_mode::turn_off_and or mode == output_set_mode::turn_on_and
 
   output_set_rule:
     seq:
