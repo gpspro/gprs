@@ -160,7 +160,14 @@
                                     code == CMD_PARAM_TYPE_OUTPUT_SCH_GET || \
                                     code == CMD_PARAM_TYPE_OUTPUT_SCH_SET || \
                                     code == CMD_PARAM_TYPE_OUTPUT_SCH_LST || \
-                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_CLR)
+                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_CLR || \
+                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_CLR || \
+                                    code == CMD_PARAM_TYPE_CDMA_IP_PORT   || \
+                                    code == CMD_PARAM_TYPE_CDMA_ACTIVATE  || \
+                                    code == CMD_PARAM_TYPE_GSM_MODE       || \
+                                    code == CMD_PARAM_TYPE_GSM_NETWORK    || \
+                                    code == CMD_PARAM_TYPE_SLEEP_TIME     || \
+                                    code == CMD_PARAM_TYPE_LEDS_STATUS)
 
 #define gprs_is_sendval_reply(code)  (code == CMD_VAL_REMOTE_DIAG         || \
                                       code == CMD_VAL_REMOTE_DIAG2)
