@@ -105,7 +105,8 @@
 #define GPRS_PACKET_MAX_SIZE            10240
 
 // Commands that exceed the report min size (above)
-#define gprs_is_cmd_large(code)   (code == CMD_PARAM_TYPE_GSM_IP_PORT || \
+#define gprs_is_cmd_large(code)   (code == CMD_PARAM_TYPE_GSM_APN || \
+                                   code == CMD_PARAM_TYPE_GSM_IP_PORT || \
                                    code == CMD_PARAM_TYPE_CDMA_IP_PORT || \
                                    code == CMD_PARAM_TYPE_ANALOG_EXT || \
                                    code == CMD_PARAM_TYPE_ANALOG_GET || \
@@ -131,16 +132,30 @@
                                    code == CMD_PROG_CODE_REQ_FW_INFO)
 
 #define gprs_is_config_msg(code)  (code == CMD_PARAM_TYPE_POSITION        || \
+                                   code == CMD_PARAM_TYPE_MOVE_FREQ       || \
                                    code == CMD_PARAM_TYPE_SENDVAL         || \
                                    code == CMD_PARAM_TYPE_REQUEST_PARAM   || \
+                                   code == CMD_PARAM_TYPE_CELL_INFO       || \
+                                   code == CMD_PARAM_TYPE_SEND_FREQ       || \
+                                   code == CMD_PARAM_TYPE_STOP_FREQ       || \
+                                   code == CMD_PARAM_TYPE_TURN_DETECT     || \
+                                   code == CMD_PARAM_TYPE_TURN_ANGLE      || \
+                                   code == CMD_PARAM_TYPE_GSM_APN         || \
+                                   code == CMD_PARAM_TYPE_GSM_IP_PORT     || \
                                    code == CMD_PARAM_TYPE_FC_PUMP         || \
-                                   code == CMD_PARAM_TYPE_INPUT_GET       || \
-                                   code == CMD_PARAM_TYPE_OUTPUT_GET      || \
-                                   code == CMD_PARAM_TYPE_OUTPUT_SET      || \
                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_GET  || \
                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_SET  || \
                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_LST  || \
                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_CLR  || \
+                                   code == CMD_PARAM_TYPE_ANALOG_EXT      || \
+                                   code == CMD_PARAM_TYPE_ANALOG_GET      || \
+                                   code == CMD_PARAM_TYPE_INPUT_GET       || \
+                                   code == CMD_PARAM_TYPE_OUTPUT_GET      || \
+                                   code == CMD_PARAM_TYPE_OUTPUT_SET      || \
+                                   code == CMD_PARAM_TYPE_CDMA_IP_PORT    || \
+                                   code == CMD_PARAM_TYPE_GSM_MODE        || \
+                                   code == CMD_PARAM_TYPE_SLEEP_TIME      || \
+                                   code == CMD_PARAM_TYPE_LEDS_STATUS     || \
                                    code == CMD_PARAM_TYPE_SET_UNITID)
 
 #define gprs_is_param_reply(code)  (code == CMD_PARAM_TYPE_MOVE_FREQ      || \
@@ -152,16 +167,15 @@
                                     code == CMD_PARAM_TYPE_GSM_APN        || \
                                     code == CMD_PARAM_TYPE_GSM_IP_PORT    || \
                                     code == CMD_PARAM_TYPE_FC_PUMP        || \
+                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_GET || \
+                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_SET || \
+                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_LST || \
+                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_CLR || \
                                     code == CMD_PARAM_TYPE_ANALOG_EXT     || \
                                     code == CMD_PARAM_TYPE_ANALOG_GET     || \
                                     code == CMD_PARAM_TYPE_INPUT_GET      || \
                                     code == CMD_PARAM_TYPE_OUTPUT_GET     || \
                                     code == CMD_PARAM_TYPE_OUTPUT_SET     || \
-                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_GET || \
-                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_SET || \
-                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_LST || \
-                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_CLR || \
-                                    code == CMD_PARAM_TYPE_OUTPUT_SCH_CLR || \
                                     code == CMD_PARAM_TYPE_CDMA_IP_PORT   || \
                                     code == CMD_PARAM_TYPE_CDMA_ACTIVATE  || \
                                     code == CMD_PARAM_TYPE_GSM_MODE       || \

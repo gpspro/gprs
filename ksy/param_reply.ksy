@@ -16,7 +16,7 @@ seq:
         68: stop_freq           # Stop Frequency Reply
         70: turn_detect         # Turn Detection Enabled Reply
         71: turn_angle          # Turn Angle Reply
-        72: modem_apn           # Modem APN Reply
+        72: gsm_apn             # GSM APN Reply
         73: gsm_ip_port         # GSM IP/Port Reply
         80: fc_pump             # FC Pump Reply
         81: output_sch_get      # Output Schedule Get Reply
@@ -66,7 +66,7 @@ types:
       - id: angle
         type: u1
 
-  modem_apn:
+  gsm_apn:
     seq:
       - id: apn_len
         type: u1

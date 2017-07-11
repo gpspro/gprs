@@ -47,7 +47,7 @@ class ParamReply < Kaitai::Struct::Struct
     when 94
       @data = GsmMode.new(@_io, self, @_root)
     when 72
-      @data = ModemApn.new(@_io, self, @_root)
+      @data = GsmApn.new(@_io, self, @_root)
     when 71
       @data = TurnAngle.new(@_io, self, @_root)
     when 70
@@ -61,6 +61,23 @@ class ParamReply < Kaitai::Struct::Struct
     when 90
       @data = OutputGet.new(@_io, self, @_root)
     end
+  end
+  class GsmApn < Kaitai::Struct::Struct
+    def initialize(_io, _parent = nil, _root = self)
+      super(_io, _parent, _root)
+      @apn_len = @_io.read_u1
+      @apn = (@_io.read_bytes(apn_len)).force_encoding("UTF-8")
+      @user_len = @_io.read_u1
+      @user = (@_io.read_bytes(user_len)).force_encoding("UTF-8")
+      @pass_len = @_io.read_u1
+      @pass = (@_io.read_bytes(pass_len)).force_encoding("UTF-8")
+    end
+    attr_reader :apn_len
+    attr_reader :apn
+    attr_reader :user_len
+    attr_reader :user
+    attr_reader :pass_len
+    attr_reader :pass
   end
   class OutputSchClear < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
@@ -117,23 +134,6 @@ class ParamReply < Kaitai::Struct::Struct
       @angle = @_io.read_u1
     end
     attr_reader :angle
-  end
-  class ModemApn < Kaitai::Struct::Struct
-    def initialize(_io, _parent = nil, _root = self)
-      super(_io, _parent, _root)
-      @apn_len = @_io.read_u1
-      @apn = (@_io.read_bytes(apn_len)).force_encoding("UTF-8")
-      @user_len = @_io.read_u1
-      @user = (@_io.read_bytes(user_len)).force_encoding("UTF-8")
-      @pass_len = @_io.read_u1
-      @pass = (@_io.read_bytes(pass_len)).force_encoding("UTF-8")
-    end
-    attr_reader :apn_len
-    attr_reader :apn
-    attr_reader :user_len
-    attr_reader :user
-    attr_reader :pass_len
-    attr_reader :pass
   end
   class OutputSet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)

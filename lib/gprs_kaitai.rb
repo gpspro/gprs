@@ -61,6 +61,18 @@ module GprsKaitai
 
     # Fields that we want to manually turn into hashes
     case data
+    when ConfigMsg::GsmApnSet
+      data_hash = {
+        :apn  => data.apn,
+        :user => data.user,
+        :pass => data.pass
+      }
+    when ConfigMsg::GsmIpPortSet
+      data_hash = {
+        :ip_address   => data.ip_address_bytes.join("."),
+        :remote_port  => data.remote_port,
+        :local_port   => data.local_port
+      }
     when ConfigMsg::OutputSet
       data_hash = {
         :output     => data.output,
@@ -78,6 +90,12 @@ module GprsKaitai
           }
         end
       end
+    when ConfigMsg::CdmaIpPortSet
+      data_hash = {
+        :ip_address   => data.ip_address_bytes.join("."),
+        :remote_port  => data.remote_port,
+        :local_port   => data.local_port
+      }
     when Array
       case data.first
       when Program::ProgramData
@@ -103,6 +121,12 @@ module GprsKaitai
           :reset_cause => data.reset_cause
         }
       end
+    when ParamReply::GsmApn
+      data_hash = {
+        :apn  => data.apn,
+        :user => data.user,
+        :pass => data.pass
+      }
     when ParamReply::GsmIpPort
       data_hash = {
         :ip_address   => data.ip_address_bytes.join("."),
