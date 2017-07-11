@@ -105,8 +105,7 @@
 #define GPRS_PACKET_MAX_SIZE            10240
 
 // Commands that exceed the report min size (above)
-#define gprs_is_cmd_large(code)   (code == CMD_PARAM_TYPE_GSM_APN || \
-                                   code == CMD_PARAM_TYPE_GSM_IP_PORT || \
+#define gprs_is_cmd_large(code)   (code == CMD_PARAM_TYPE_GSM_IP_PORT || \
                                    code == CMD_PARAM_TYPE_CDMA_IP_PORT || \
                                    code == CMD_PARAM_TYPE_ANALOG_EXT || \
                                    code == CMD_PARAM_TYPE_ANALOG_GET || \

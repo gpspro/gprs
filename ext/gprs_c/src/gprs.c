@@ -64,14 +64,26 @@ int gprs_packet_type(uint8_t * buf, int size)
   if (size == 1) {
     ptype = GPRS_PACKET_ACK;
   } else if (size > 1) {
+    int idx = 0;
+
     // Type and code are always at the same spot in a packet
-    uint8_t type = buf[0] & 0xF;
-    uint8_t code = buf[1];
+    uint8_t type = buf[idx++] & 0xF;
+    uint8_t code = buf[idx++];
 
     switch (type) {
     case CMD_TYPE_CONFIG_MSG:
       if (gprs_is_config_msg(code)) {
         ptype = GPRS_PACKET_COMMAND;
+
+        // Special check for GSM APN
+        if (code == CMD_PARAM_TYPE_GSM_APN) {
+          uint8_t size = buf[idx++];
+
+          // APN parameter size
+          if (size <= 32) {
+            return ptype;
+          }
+        }
       }
       break;
     case CMD_TYPE_PROGRAM:
