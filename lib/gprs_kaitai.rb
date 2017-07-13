@@ -160,7 +160,7 @@ module GprsKaitai
         :max      => data.max
       }
 
-      if data.format == :analog_ext_format_voltage
+      if data.format == 2
         data_hash[:value] = '%.02fV' % data.value
         data_hash[:min]   = '%.02fV' % data.min
         data_hash[:max]   = '%.02fV' % data.max

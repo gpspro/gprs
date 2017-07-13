@@ -32,8 +32,8 @@ seq:
         93: cdma_activate       # CDMA Activate Reply
         94: gsm_mode            # GSM Mode Reply
         95: gsm_network         # GSM Network Reply
-        100: sleep_timeout_get  # Sleep Timeout Get Reply
-        101: led_status_get     # LED Status Get Reply
+        100: sleep_timeout      # Sleep Timeout Reply
+        101: led_status         # LED Status Reply
 
 types:
   move_freq:
@@ -43,7 +43,7 @@ types:
 
   cell_info:
     seq:
-      - id: info
+      - id: enabled
         type: u1
 
   send_freq:
@@ -247,12 +247,12 @@ types:
       - id: network
         type: u1
 
-  sleep_timeout_get:
+  sleep_timeout:
     seq:
       - id: timeout
         type: u2
 
-  led_status_get:
+  led_status:
     seq:
       - id: status
         type: u1

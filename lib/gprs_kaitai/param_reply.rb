@@ -23,9 +23,9 @@ class ParamReply < Kaitai::Struct::Struct
     when 1
       @data = MoveFreq.new(@_io, self, @_root)
     when 101
-      @data = LedStatusGet.new(@_io, self, @_root)
+      @data = LedStatus.new(@_io, self, @_root)
     when 100
-      @data = SleepTimeoutGet.new(@_io, self, @_root)
+      @data = SleepTimeout.new(@_io, self, @_root)
     when 87
       @data = AnalogExt.new(@_io, self, @_root)
     when 91
@@ -114,6 +114,20 @@ class ParamReply < Kaitai::Struct::Struct
     end
     attr_reader :network
   end
+  class SleepTimeout < Kaitai::Struct::Struct
+    def initialize(_io, _parent = nil, _root = self)
+      super(_io, _parent, _root)
+      @timeout = @_io.read_u2le
+    end
+    attr_reader :timeout
+  end
+  class LedStatus < Kaitai::Struct::Struct
+    def initialize(_io, _parent = nil, _root = self)
+      super(_io, _parent, _root)
+      @status = @_io.read_u1
+    end
+    attr_reader :status
+  end
   class AnalogGet < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
@@ -166,13 +180,6 @@ class ParamReply < Kaitai::Struct::Struct
       @mode = @_io.read_u1
     end
     attr_reader :mode
-  end
-  class SleepTimeoutGet < Kaitai::Struct::Struct
-    def initialize(_io, _parent = nil, _root = self)
-      super(_io, _parent, _root)
-      @timeout = @_io.read_u2le
-    end
-    attr_reader :timeout
   end
   class AnalogExt < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
@@ -307,9 +314,9 @@ class ParamReply < Kaitai::Struct::Struct
   class CellInfo < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
       super(_io, _parent, _root)
-      @info = @_io.read_u1
+      @enabled = @_io.read_u1
     end
-    attr_reader :info
+    attr_reader :enabled
   end
   class CdmaIpPort < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
@@ -324,13 +331,6 @@ class ParamReply < Kaitai::Struct::Struct
     attr_reader :ip_address_bytes
     attr_reader :remote_port
     attr_reader :local_port
-  end
-  class LedStatusGet < Kaitai::Struct::Struct
-    def initialize(_io, _parent = nil, _root = self)
-      super(_io, _parent, _root)
-      @status = @_io.read_u1
-    end
-    attr_reader :status
   end
   class OutputSchItem < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = self)
