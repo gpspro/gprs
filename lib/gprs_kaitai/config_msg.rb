@@ -192,10 +192,10 @@ class ConfigMsg < Kaitai::Struct::Struct
       super(_io, _parent, _root)
       @output = @_io.read_u1
       @mode = @_io.read_u1
-      if  ((mode == 3) || (mode == 4)) 
+      if  ((mode == 2) || (mode == 3)) 
         @rule_count = @_io.read_u1
       end
-      if  ((mode == 3) || (mode == 4)) 
+      if  ((mode == 2) || (mode == 3)) 
         @rules = Array.new(rule_count)
         (rule_count).times { |i|
           @rules[i] = OutputSetRule.new(@_io, self, @_root)

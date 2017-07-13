@@ -179,12 +179,12 @@ types:
         type: u1
       - id: rule_count
         type: u1
-        if: mode == 3 or mode == 4
+        if: mode == 2 or mode == 3
       - id: rules
         type: output_set_rule
         repeat: expr
         repeat-expr: rule_count
-        if: mode == 3 or mode == 4
+        if: mode == 2 or mode == 3
 
   output_set_rule:
     seq:
